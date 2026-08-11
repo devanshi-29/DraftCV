@@ -17,6 +17,10 @@
   letter-spacing: -0.6px;
 }
 
+.logo span {
+  color:rgb(115, 222, 248);
+}
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -34,7 +38,7 @@
   color: var(--text-primary);
 }
 
-.nav-links button {
+.startBuilding-btn {
   padding: 11px 20px;
 
   border: none;
@@ -51,6 +55,6 @@
   transition: background-color 0.2s ease;
 }
 
-.nav-links button:hover {
+.startBuilding-btn:hover {
   background-color: rgb(222, 219, 219);
 }
