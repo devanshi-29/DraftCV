@@ -689,3 +689,42 @@
     overflow: hidden;
   }
 }
+
+.download-pdf-btn {
+  display: block;
+  margin: 0 auto 24px;
+  padding: 11px 22px;
+
+  background: #d3d3d5;
+  color: #090e89;
+
+  border: none;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.download-pdf-btn:hover {
+  color: #12028a;
+  background: #9de5fc;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(29, 78, 216, 0.25);
+}
+
+.download-pdf-btn:active {
+  transform: translateY(0);
+}
+
+.download-pdf-btn:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 3px;
+}

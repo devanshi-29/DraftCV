@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
-
+import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 import "./Builder.css";
 
 const PAGE_HEIGHT_MM = 297;
@@ -14,6 +15,48 @@ const Builder = () => {
     control,
     formState: { errors }
   } = useForm({ mode: "onBlur" });
+
+
+  const downloadPDF = async () => {
+  const pages = document.querySelectorAll(
+  ".resume-pages .resume-preview"
+);
+
+  if (!pages.length) return;
+
+  const pdf = new jsPDF({
+    unit: "mm",
+    format: "a4",
+    orientation: "portrait"
+  });
+
+  for (let i = 0; i < pages.length; i++) {
+    const canvas = await html2canvas(pages[i], {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff"
+    });
+
+    const imgData = canvas.toDataURL("image/jpeg", 0.98);
+
+    if (i > 0) {
+      pdf.addPage();
+    }
+
+    pdf.addImage(
+      imgData,
+      "JPEG",
+      0,
+      0,
+      210,
+      297
+    );
+  }
+
+  pdf.save("my-resume.pdf");
+};
+
+
 
   const [sections, setSections] = useState(["summary"]);
   const [pageGroups, setPageGroups] = useState([]);
@@ -971,6 +1014,12 @@ const currentPageBottom =
 
       {/* RIGHT SIDE - PAGINATED A4 PREVIEW */}
       <div className="builder-preview">
+        <button type="button" 
+        className="download-pdf-btn"
+        onClick={downloadPDF}
+        >
+          Download PDF
+        </button>
         <div className="resume-pages">
           {pageGroups.map((group, pageIndex) => (
             <div className="resume-page-wrapper" key={pageIndex}>
