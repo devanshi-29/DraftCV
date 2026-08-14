@@ -12,9 +12,13 @@ const Builder = () => {
   const {
     register,
     watch,
+    reset,
     control,
     formState: { errors }
-  } = useForm({ mode: "onBlur" });
+  } = useForm({ mode: "onBlur",
+  defaultValues: JSON.parse(
+    localStorage.getItem("draftcv-resume")
+  ) || {} });
 
 
   const downloadPDF = async () => {
@@ -56,9 +60,9 @@ const Builder = () => {
   pdf.save("my-resume.pdf");
 };
 
-
-
-  const [sections, setSections] = useState(["summary"]);
+const [sections, setSections] = useState(
+  JSON.parse(localStorage.getItem("draftcv-sections")) || ["summary"]
+);
   const [pageGroups, setPageGroups] = useState([]);
   const measureRef = useRef(null);
 
@@ -92,6 +96,20 @@ const Builder = () => {
   });
 
   const formData = watch();
+
+  useEffect(() => {
+  localStorage.setItem(
+    "draftcv-resume",
+    JSON.stringify(formData)
+  );
+}, [formData]);
+
+useEffect(() => {
+  localStorage.setItem(
+    "draftcv-sections",
+    JSON.stringify(sections)
+  );
+}, [sections]);
 
   /*
    * IMPORTANT:
@@ -1014,12 +1032,29 @@ const currentPageBottom =
 
       {/* RIGHT SIDE - PAGINATED A4 PREVIEW */}
       <div className="builder-preview">
-        <button type="button" 
-        className="download-pdf-btn"
-        onClick={downloadPDF}
-        >
-          Download PDF
-        </button>
+        <div className="resume-actions">
+  <button
+    type="button"
+    className="download-pdf-btn"
+    onClick={downloadPDF}
+  >
+    Download PDF
+  </button>
+
+  <button
+    type="button"
+    className="clear-resume-btn"
+    onClick={() => {
+      localStorage.removeItem("draftcv-resume");
+      localStorage.removeItem("draftcv-sections");
+
+      reset({});
+      setSections(["summary"]);
+    }}
+  >
+    Clear Resume
+  </button>
+</div>
         <div className="resume-pages">
           {pageGroups.map((group, pageIndex) => (
             <div className="resume-page-wrapper" key={pageIndex}>
