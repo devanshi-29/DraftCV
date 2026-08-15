@@ -5,7 +5,7 @@ import { jsPDF } from "jspdf";
 import "./Builder.css";
 
 const PAGE_HEIGHT_MM = 297;
-const PAGE_PADDING_MM = 15;
+const PAGE_PADDING_MM = 12;
 const PAGE_CONTENT_HEIGHT_PX = (PAGE_HEIGHT_MM - PAGE_PADDING_MM * 2) * 96 / 25.4;
 
 const Builder = () => {
@@ -63,6 +63,13 @@ const Builder = () => {
 const [sections, setSections] = useState(
   JSON.parse(localStorage.getItem("draftcv-sections")) || ["summary"]
 );
+
+const [spacing, setSpacing] = useState({
+  letterSpacing: 0,
+  lineSpacing: 1.4,
+  sectionSpacing: 15
+});
+
   const [pageGroups, setPageGroups] = useState([]);
   const measureRef = useRef(null);
 
@@ -415,7 +422,7 @@ const currentPageBottom =
        */
       if (
         currentPage.length > 0 &&
-        top >= currentPageBottom
+        bottom > currentPageBottom
       ) {
         groups.push(currentPage);
         currentPage = [];
@@ -457,7 +464,8 @@ const currentPageBottom =
   projectFields,
   skillFields,
   certificationFields,
-  fields
+  fields,
+  spacing
 ]);
 
 
@@ -485,6 +493,64 @@ const currentPageBottom =
         <p>
           Fill in your details and see your resume update live.
         </p>
+
+        <div className="form-section spacing-section">
+  <h2>Spacing Customization</h2>
+
+  <label>
+    Letter Spacing: {spacing.letterSpacing}px
+  </label>
+
+  <input
+    type="range"
+    min="-1"
+    max="5"
+    step="0.1"
+    value={spacing.letterSpacing}
+    onChange={(e) =>
+      setSpacing({
+        ...spacing,
+        letterSpacing: Number(e.target.value)
+      })
+    }
+  />
+
+  <label>
+    Line Spacing: {spacing.lineSpacing}
+  </label>
+
+  <input
+    type="range"
+    min="1"
+    max="2.5"
+    step="0.1"
+    value={spacing.lineSpacing}
+    onChange={(e) =>
+      setSpacing({
+        ...spacing,
+        lineSpacing: Number(e.target.value)
+      })
+    }
+  />
+
+  <label>
+    Section Spacing: {spacing.sectionSpacing}px
+  </label>
+
+  <input
+    type="range"
+    min="0"
+    max="40"
+    step="1"
+    value={spacing.sectionSpacing}
+    onChange={(e) =>
+      setSpacing({
+        ...spacing,
+        sectionSpacing: Number(e.target.value)
+      })
+    }
+  />
+</div>
 
         {/* PERSONAL INFORMATION */}
         <div className="form-section">
@@ -1062,7 +1128,12 @@ const currentPageBottom =
                 Page {pageIndex + 1}
               </div>
 
-              <div className="resume-preview">
+              <div className="resume-preview"
+                 style={{
+                 letterSpacing: `${spacing.letterSpacing}px`,
+                   lineHeight: spacing.lineSpacing
+                  }}
+              >
                 {group.map((id) => {
                   const block = getBlockById(id);
 
@@ -1070,7 +1141,10 @@ const currentPageBottom =
                     <div
                       className="resume-block-wrapper"
                       key={id}
-                    >
+                      style={{
+                       marginBottom: `${spacing.sectionSpacing}px`
+                       }}
+                     >
                       {block?.node}
                     </div>
                   );
@@ -1086,12 +1160,20 @@ const currentPageBottom =
           className="resume-measure"
           aria-hidden="true"
         >
-          <div className="resume-preview">
+          <div className="resume-preview"
+             style={{
+              letterSpacing: `${spacing.letterSpacing}px`,
+              lineHeight: spacing.lineSpacing
+                }}
+          >
             {resumeBlocks.map((block) => (
               <div
                 key={block.id}
                 data-resume-block={block.id}
                 className="resume-block-wrapper"
+                style={{
+                  marginBottom: `${spacing.sectionSpacing}px`
+                  }}
               >
                 {block.node}
               </div>
