@@ -494,6 +494,8 @@ const currentPageBottom =
           Fill in your details and see your resume update live.
         </p>
 
+
+
         <div className="form-section spacing-section">
   <h2>Spacing Customization</h2>
 
@@ -1115,7 +1117,7 @@ const currentPageBottom =
       localStorage.removeItem("draftcv-sections");
 
       reset({});
-      setSections(["summary"]);
+      setSections([]);
     }}
   >
     Clear Resume
