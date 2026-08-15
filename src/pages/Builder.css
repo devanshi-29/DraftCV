@@ -804,3 +804,713 @@
   margin-bottom: 0;
 }
 
+/* =========================
+   GRID TEMPLATE
+========================= */
+
+.resume-preview.grid-template {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #111827;
+}
+
+/* Personal Header */
+.resume-preview.grid-template .resume-personal-block {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.resume-preview.grid-template .resume-personal-block h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0 0 5px;
+  letter-spacing: 0;
+}
+
+.resume-preview.grid-template .resume-contact {
+  font-size: 10px;
+  color: #4b5563;
+  margin: 0;
+}
+
+.resume-preview.grid-template .resume-contact a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Grid - Summary */
+.resume-preview.grid-template .resume-block h2 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1.5px solid #111827;
+  padding-bottom: 4px;
+  margin: 0 0 8px;
+}
+
+.resume-preview.grid-template .resume-block p {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #374151;
+  margin: 0;
+}
+
+/* =========================================
+   GRID TEMPLATE — COMPLETE
+========================================= */
+
+.resume-preview.grid-template {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #111827;
+}
+
+/* ---------- Personal ---------- */
+
+.resume-preview.grid-template .resume-personal-block {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.resume-preview.grid-template .resume-personal-block h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0 0 5px;
+  letter-spacing: 0;
+}
+
+.resume-preview.grid-template .resume-contact {
+  font-size: 10px;
+  color: #4b5563;
+  margin: 0;
+}
+
+.resume-preview.grid-template .resume-contact a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- All Section Headings ---------- */
+
+.resume-preview.grid-template .resume-block > h2 {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1.5px solid #111827;
+  padding-bottom: 4px;
+  margin: 0 0 10px;
+}
+
+/* ---------- General Text ---------- */
+
+.resume-preview.grid-template .resume-block p {
+  font-size: 11px;
+  color: #374151;
+  margin: 0;
+}
+
+/* ---------- Experience ---------- */
+
+.resume-preview.grid-template .preview-experience {
+  margin-bottom: 12px;
+}
+
+.resume-preview.grid-template .gap-btw-comp-date {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+
+.resume-preview.grid-template .gap-btw-comp-date h3 {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.resume-preview.grid-template .gap-btw-comp-date p {
+  font-size: 10px;
+  white-space: nowrap;
+  color: #4b5563;
+}
+
+.resume-preview.grid-template .experience-bullets {
+  margin: 5px 0 0;
+  padding-left: 17px;
+}
+
+.resume-preview.grid-template .experience-bullets li {
+  font-size: 10.5px;
+  margin-bottom: 3px;
+  color: #374151;
+}
+
+/* ---------- Education ---------- */
+
+.resume-preview.grid-template .preview-education {
+  margin-bottom: 10px;
+}
+
+.resume-preview.grid-template .preview-education h3 {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.resume-preview.grid-template .preview-education > p {
+  margin-top: 3px;
+  font-size: 10.5px;
+}
+
+/* ---------- Projects ---------- */
+
+.resume-preview.grid-template .preview-project {
+  margin-bottom: 12px;
+}
+
+.resume-preview.grid-template .project-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+
+.resume-preview.grid-template .project-title h3 {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.resume-preview.grid-template .project-title a {
+  font-size: 9.5px;
+  text-decoration: none;
+}
+
+.resume-preview.grid-template .project-tech {
+  font-size: 10px !important;
+  font-style: italic;
+  margin-top: 3px !important;
+}
+
+.resume-preview.grid-template .project-bullets {
+  margin: 5px 0 0;
+  padding-left: 17px;
+}
+
+.resume-preview.grid-template .project-bullets li {
+  font-size: 10.5px;
+  margin-bottom: 3px;
+  color: #374151;
+}
+
+/* ---------- Skills ---------- */
+
+.resume-preview.grid-template .skills-preview {
+  margin: 0;
+  padding-left: 17px;
+}
+
+.resume-preview.grid-template .skills-preview li {
+  font-size: 10.5px;
+  margin-bottom: 4px;
+  color: #374151;
+}
+
+.resume-preview.grid-template .skill-heading {
+  font-weight: 700;
+  color: #111827;
+}
+
+/* ---------- Certifications ---------- */
+
+.resume-preview.grid-template .preview-certification {
+  margin-bottom: 7px;
+}
+
+.resume-preview.grid-template .certification-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+
+.resume-preview.grid-template .certification-info {
+  font-size: 10.5px;
+}
+
+.resume-preview.grid-template .certification-name {
+  font-weight: 700;
+}
+
+.resume-preview.grid-template .certification-org {
+  color: #374151;
+}
+
+.resume-preview.grid-template .certification-date {
+  font-size: 10px;
+  color: #4b5563;
+  white-space: nowrap;
+}
+
+.resume-preview.grid-template .certification-info a {
+  font-size: 9.5px;
+  text-decoration: none;
+}
+
+/* =========================================
+   LEDGER TEMPLATE
+   Same Resume Structure — Design Only
+========================================= */
+
+.resume-preview.ledger-template {
+  font-family: Georgia, "Times New Roman", serif;
+  color: #1f2933;
+}
+
+/* ---------- Personal ---------- */
+
+.resume-preview.ledger-template .resume-personal-block {
+  text-align: center;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #9ca3af;
+}
+
+.resume-preview.ledger-template .resume-personal-block h1 {
+  font-size: 27px;
+  font-weight: 600;
+  margin: 0 0 6px;
+  letter-spacing: 1px;
+}
+
+.resume-preview.ledger-template .resume-contact {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9.5px;
+  color: #4b5563;
+  margin: 0;
+}
+
+.resume-preview.ledger-template .resume-contact a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- Section Headings ---------- */
+
+.resume-preview.ledger-template .resume-block > h2 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: #374151;
+  margin: 0 0 9px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #9ca3af;
+}
+
+/* ---------- General Text ---------- */
+
+.resume-preview.ledger-template .resume-block p {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: #374151;
+  margin: 0;
+}
+
+/* ---------- Experience ---------- */
+
+.resume-preview.ledger-template .preview-experience {
+  margin-bottom: 13px;
+}
+
+.resume-preview.ledger-template .gap-btw-comp-date {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+
+.resume-preview.ledger-template .gap-btw-comp-date h3 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  margin: 0;
+  color: #1f2933;
+}
+
+.resume-preview.ledger-template .gap-btw-comp-date p {
+  font-size: 9.5px;
+  white-space: nowrap;
+  color: #6b7280;
+}
+
+.resume-preview.ledger-template .experience-bullets {
+  margin: 5px 0 0;
+  padding-left: 17px;
+}
+
+.resume-preview.ledger-template .experience-bullets li {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  color: #4b5563;
+  margin-bottom: 3px;
+}
+
+/* ---------- Education ---------- */
+
+.resume-preview.ledger-template .preview-education {
+  margin-bottom: 11px;
+}
+
+.resume-preview.ledger-template .preview-education h3 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.resume-preview.ledger-template .preview-education > p {
+  font-size: 10px;
+  margin-top: 3px;
+  color: #4b5563;
+}
+
+/* ---------- Projects ---------- */
+
+.resume-preview.ledger-template .preview-project {
+  margin-bottom: 13px;
+}
+
+.resume-preview.ledger-template .project-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+
+.resume-preview.ledger-template .project-title h3 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.resume-preview.ledger-template .project-title a {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9px;
+  color: #374151;
+  text-decoration: underline;
+}
+
+.resume-preview.ledger-template .project-tech {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9.5px !important;
+  font-style: italic;
+  color: #6b7280 !important;
+  margin-top: 3px !important;
+}
+
+.resume-preview.ledger-template .project-bullets {
+  margin: 5px 0 0;
+  padding-left: 17px;
+}
+
+.resume-preview.ledger-template .project-bullets li {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  color: #4b5563;
+  margin-bottom: 3px;
+}
+
+/* ---------- Skills ---------- */
+
+.resume-preview.ledger-template .skills-preview {
+  margin: 0;
+  padding-left: 17px;
+}
+
+.resume-preview.ledger-template .skills-preview li {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+  color: #4b5563;
+  margin-bottom: 4px;
+}
+
+.resume-preview.ledger-template .skill-heading {
+  font-weight: 700;
+  color: #1f2933;
+}
+
+/* ---------- Certifications ---------- */
+
+.resume-preview.ledger-template .preview-certification {
+  margin-bottom: 7px;
+}
+
+.resume-preview.ledger-template .certification-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+
+.resume-preview.ledger-template .certification-info {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 10px;
+}
+
+.resume-preview.ledger-template .certification-name {
+  font-weight: 700;
+}
+
+.resume-preview.ledger-template .certification-org {
+  color: #4b5563;
+}
+
+.resume-preview.ledger-template .certification-date {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9.5px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.resume-preview.ledger-template .certification-info a {
+  font-size: 9px;
+  color: #374151;
+  text-decoration: underline;
+}
+
+/* =========================================
+   SIGNAL TEMPLATE
+   Same Resume Structure — Design Only
+========================================= */
+
+.resume-preview.signal-template {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #172033;
+}
+
+/* ---------- Personal ---------- */
+
+.resume-preview.signal-template .resume-personal-block {
+  margin-bottom: 22px;
+  padding-bottom: 14px;
+  border-bottom: 3px solid #172033;
+}
+
+.resume-preview.signal-template .resume-personal-block h1 {
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0 0 5px;
+  letter-spacing: -0.5px;
+}
+
+.resume-preview.signal-template .resume-contact {
+  font-size: 9.5px;
+  color: #64748b;
+  margin: 0;
+}
+
+.resume-preview.signal-template .resume-contact a {
+  color: #172033;
+  text-decoration: none;
+}
+
+/* ---------- Section Headings ---------- */
+
+.resume-preview.signal-template .resume-block > h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+
+  color: #172033;
+  margin: 0 0 10px;
+  padding-bottom: 5px;
+
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.resume-preview.signal-template .resume-block > h2::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  display: inline-block;
+  background: #172033;
+}
+
+/* ---------- General Text ---------- */
+
+.resume-preview.signal-template .resume-block p {
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: #475569;
+  margin: 0;
+}
+
+/* ---------- Experience ---------- */
+
+.resume-preview.signal-template .preview-experience {
+  margin-bottom: 13px;
+  padding-left: 10px;
+  border-left: 2px solid #cbd5e1;
+}
+
+.resume-preview.signal-template .gap-btw-comp-date {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+
+.resume-preview.signal-template .gap-btw-comp-date h3 {
+  font-size: 11px;
+  font-weight: 700;
+  color: #172033;
+  margin: 0;
+}
+
+.resume-preview.signal-template .gap-btw-comp-date p {
+  font-size: 9.5px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.resume-preview.signal-template .experience-bullets {
+  margin: 5px 0 0;
+  padding-left: 16px;
+}
+
+.resume-preview.signal-template .experience-bullets li {
+  font-size: 10px;
+  color: #475569;
+  margin-bottom: 3px;
+}
+
+/* ---------- Education ---------- */
+
+.resume-preview.signal-template .preview-education {
+  margin-bottom: 11px;
+  padding-left: 10px;
+  border-left: 2px solid #cbd5e1;
+}
+
+.resume-preview.signal-template .preview-education h3 {
+  font-size: 11px;
+  font-weight: 700;
+  color: #172033;
+  margin: 0;
+}
+
+.resume-preview.signal-template .preview-education > p {
+  font-size: 10px;
+  margin-top: 3px;
+  color: #64748b;
+}
+
+/* ---------- Projects ---------- */
+
+.resume-preview.signal-template .preview-project {
+  margin-bottom: 13px;
+  padding-left: 10px;
+  border-left: 2px solid #cbd5e1;
+}
+
+.resume-preview.signal-template .project-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+
+.resume-preview.signal-template .project-title h3 {
+  font-size: 11px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.resume-preview.signal-template .project-title a {
+  font-size: 9px;
+  color: #172033;
+  text-decoration: underline;
+}
+
+.resume-preview.signal-template .project-tech {
+  font-size: 9.5px !important;
+  font-style: italic;
+  color: #64748b !important;
+  margin-top: 3px !important;
+}
+
+.resume-preview.signal-template .project-bullets {
+  margin: 5px 0 0;
+  padding-left: 16px;
+}
+
+.resume-preview.signal-template .project-bullets li {
+  font-size: 10px;
+  color: #475569;
+  margin-bottom: 3px;
+}
+
+/* ---------- Skills ---------- */
+
+.resume-preview.signal-template .skills-preview {
+  margin: 0;
+  padding-left: 16px;
+}
+
+.resume-preview.signal-template .skills-preview li {
+  font-size: 10px;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.resume-preview.signal-template .skill-heading {
+  font-weight: 700;
+  color: #172033;
+}
+
+/* ---------- Certifications ---------- */
+
+.resume-preview.signal-template .preview-certification {
+  margin-bottom: 7px;
+}
+
+.resume-preview.signal-template .certification-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 15px;
+}
+
+.resume-preview.signal-template .certification-info {
+  font-size: 10px;
+}
+
+.resume-preview.signal-template .certification-name {
+  font-weight: 700;
+  color: #172033;
+}
+
+.resume-preview.signal-template .certification-org {
+  color: #475569;
+}
+
+.resume-preview.signal-template .certification-date {
+  font-size: 9.5px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.resume-preview.signal-template .certification-info a {
+  font-size: 9px;
+  color: #172033;
+  text-decoration: underline;
+}

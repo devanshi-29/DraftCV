@@ -24,20 +24,21 @@
 
 .templates-heading {
   text-align: left;
-  margin-bottom: 40px;
+  margin: 14px 0 6px;
+  margin-bottom: 45px;
 }
 
 .templates-heading p {
-  margin-top: 12px;
+  text-align:left;
+  margin: 0 auto 16px;
+  line-height: 1.4;
 }
 
 .templates-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 360px);
+  justify-content: center;
   gap: 28px;
-  max-width: 1050px;
-  margin: 0 auto;
-
 }
 
 .template-card {
@@ -47,6 +48,9 @@
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 transition: transform 0.25s ease, border-color 0.25s ease;
+width: 360px;
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .template-card:hover {
@@ -76,16 +80,6 @@ transition: transform 0.25s ease, border-color 0.25s ease;
   line-height: 1.5;
 }
 
-.template-card button {
-  width: 100%;
-  padding: 11px 16px;
-  border: 1px solid #333;
-  border-radius: 7px;
-  background: transparent;
-  color: var(--text-primary);
-  font-size: 14px;
-  cursor: pointer;
-}
 
 .grid-preview {
   color: #222;
@@ -259,8 +253,8 @@ transition: transform 0.25s ease, border-color 0.25s ease;
 }
 
 .template-card button {
-    display: block;
-  margin: 0;
+  display: block;
+  margin: 0 auto;
   padding: 11px 22px;
 
   background: transparent;
@@ -287,4 +281,73 @@ transition: transform 0.25s ease, border-color 0.25s ease;
   border-color:rgb(3, 169, 3);
   background:transparent;
   transform: translateY(-1px);
+}
+
+/* =========================
+   ORIGINAL TEMPLATE PREVIEW
+========================= */
+
+.original-preview {
+  padding: 18px;
+  background: white;
+  color: #222;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.original-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.original-contact {
+  font-size: 6px;
+  color: #666;
+  margin-bottom: 14px;
+}
+
+.original-section {
+  font-size: 7px;
+  font-weight: 700;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 3px;
+}
+
+.original-text {
+  height: 4px;
+  width: 90%;
+  background: #ddd;
+  margin-bottom: 4px;
+}
+
+.original-text.short {
+  width: 60%;
+}
+
+.original-entry {
+  display: flex;
+  justify-content: space-between;
+  font-size: 6px;
+  margin-bottom: 5px;
+}
+
+.original-entry span {
+  color: #777;
+}
+
+.original-skills {
+  font-size: 6px;
+  color: #555;
+}
+
+/* =========================
+   RESPONSIVE TEMPLATES
+========================= */
+
+@media (max-width: 768px) {
+  .templates-grid {
+    grid-template-columns: 1fr;
+  }
 }

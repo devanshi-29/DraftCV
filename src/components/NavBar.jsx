@@ -1,6 +1,8 @@
 import React from "react";
-import  "./NavBar.css";
+import { useNavigate } from "react-router-dom";
+import "./NavBar.css";
 const NavBar=()=>{
+  const navigate = useNavigate();
   return(
     <nav className="navbar">
      <div className="logo">
@@ -8,12 +10,44 @@ const NavBar=()=>{
      </div>
 
      <div className="nav-links">
-       <a href="">How It Works</a>
-       <a href="">Templates</a>
-       <a href="">FAQs</a>
-     </div>
+  <a
+    href="#how-it-works"
+    onClick={(e) => {
+      e.preventDefault();
+      document.getElementById("how-it-works")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }}
+  >
+    How It Works
+  </a>
 
-     <button className='startBuilding-btn'>Start Building</button>
+  <a
+    href="#templates"
+    onClick={(e) => {
+      e.preventDefault();
+      document.getElementById("templates")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }}
+  >
+    Templates
+  </a>
+
+  <a
+    href="#faqs"
+    onClick={(e) => {
+      e.preventDefault();
+      document.getElementById("faqs")?.scrollIntoView({
+        behavior: "smooth",
+      });
+    }}
+  >
+    FAQs
+  </a>
+</div>
+
+    <button className="startBuilding-btn" onClick={() => navigate("/builder")}>Start Building</button>
     </nav>
   )
 }

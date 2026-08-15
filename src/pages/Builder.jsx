@@ -3,12 +3,17 @@ import { useForm, useFieldArray } from "react-hook-form";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import "./Builder.css";
+import { useSearchParams } from "react-router-dom";
 
 const PAGE_HEIGHT_MM = 297;
 const PAGE_PADDING_MM = 12;
 const PAGE_CONTENT_HEIGHT_PX = (PAGE_HEIGHT_MM - PAGE_PADDING_MM * 2) * 96 / 25.4;
 
 const Builder = () => {
+  const [searchParams] = useSearchParams();
+
+  const selectedTemplate = searchParams.get("template") || "original";
+  
   const {
     register,
     watch,
@@ -1130,7 +1135,7 @@ const currentPageBottom =
                 Page {pageIndex + 1}
               </div>
 
-              <div className="resume-preview"
+              <div className={`resume-preview ${selectedTemplate}-template`}
                  style={{
                  letterSpacing: `${spacing.letterSpacing}px`,
                    lineHeight: spacing.lineSpacing
@@ -1162,7 +1167,7 @@ const currentPageBottom =
           className="resume-measure"
           aria-hidden="true"
         >
-          <div className="resume-preview"
+          <div className={`resume-preview ${selectedTemplate}-template`}
              style={{
               letterSpacing: `${spacing.letterSpacing}px`,
               lineHeight: spacing.lineSpacing

@@ -1,7 +1,8 @@
 
 import "./Hero.css";
-
+import { useNavigate } from "react-router-dom";
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <section className="hero">
 
@@ -21,13 +22,19 @@ const Hero = () => {
         </p>
 
         <div className='hero-btns'>
-        <button className="hero-button">
-          Build my resume <span>→</span>
-        </button>
+        <button  className="hero-button" onClick={() => navigate("/builder")}>
+         Build My Resume
+         </button>
 
-         <button className="hero-button">
-          See templates
-        </button>
+         <button className="hero-button"
+  onClick={() =>
+    document.getElementById("templates")?.scrollIntoView({
+      behavior: "smooth",
+    })
+  }
+>
+  See Templates
+</button>
         </div>
       </div>
 

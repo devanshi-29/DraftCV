@@ -1,12 +1,14 @@
+import { useNavigate } from "react-router-dom";
 import "./Templates.css";
-
 function Templates() {
+    const navigate = useNavigate();
   return (
-    <section className="templates-section">
+    <section id="templates" className="templates-section">
       <div className="templates-heading">
         <h2>Choose your template</h2>
         <p>Pick a design that fits your style and start building.</p>
       </div>
+
 
       <div className="templates-grid">
 
@@ -40,7 +42,9 @@ function Templates() {
           <h3>Grid</h3>
           <p>Clean & ATS-friendly for every application</p>
 
-          <button>Use this template →</button>
+          <button onClick={() => navigate("/builder?template=grid")}>
+             Use this template →
+           </button>
         </div>
 
         {/* Ledger Template */}
@@ -83,7 +87,9 @@ function Templates() {
           <h3>Ledger</h3>
           <p>Professional & polished for a corporate look</p>
 
-          <button>Use this template →</button>
+          <button onClick={() => navigate("/builder?template=ledger")}>
+            Use this template →
+          </button>
         </div>
 
         {/* Signal Template */}
@@ -132,10 +138,55 @@ function Templates() {
 
           <h3>Signal</h3>
           <p>Modern & minimal with a distinctive style</p>
-
-          <button>Use this template →</button>
+            <button onClick={() => navigate("/builder?template=signal")}>
+            Use this template →
+           </button>
         </div>
+        {/* Original Template */}
+<div className="template-card">
+  <div className="template-preview original-preview">
 
+    <div className="original-name">YOUR NAME</div>
+
+    <div className="original-contact">
+      email@example.com · +91 98765 43210 · Location
+    </div>
+
+    <div className="original-section">SUMMARY</div>
+    <div className="original-text"></div>
+    <div className="original-text"></div>
+
+    <div className="original-section">EXPERIENCE</div>
+
+    <div className="original-entry">
+      <strong>Software Developer | Company</strong>
+      <span>2024 — Present</span>
+    </div>
+
+    <div className="original-text"></div>
+    <div className="original-text short"></div>
+
+    <div className="original-section">EDUCATION</div>
+
+    <div className="original-entry">
+      <strong>B.Tech Computer Science</strong>
+      <span>2022 — 2026</span>
+    </div>
+
+    <div className="original-section">SKILLS</div>
+    <div className="original-skills">
+      Java · React · JavaScript · SQL
+    </div>
+
+  </div>
+
+  <h3>Classic</h3>
+<p>Clean & professional for every application</p>
+
+  <button onClick={() => navigate("/builder?template=original")}>
+    Use this template →
+  </button>
+</div>
       </div>
     </section>
   );
