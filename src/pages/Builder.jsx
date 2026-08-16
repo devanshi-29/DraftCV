@@ -75,6 +75,10 @@ const [spacing, setSpacing] = useState({
   sectionSpacing: 15
 });
 
+   const [aiResult, setAiResult] = useState(null);
+
+   const [jobDescription, setJobDescription] = useState("");
+
   const [pageGroups, setPageGroups] = useState([]);
   const measureRef = useRef(null);
 
@@ -108,6 +112,33 @@ const [spacing, setSpacing] = useState({
   });
 
   const formData = watch();
+
+  const prepareAIData = () => {
+  return {
+    resume: formData,
+    jobDescription: jobDescription
+  };
+};
+
+const analyzeResumeWithAI = async () => {
+  try {
+    const response = await fetch("/api/analyze-resume", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(prepareAIData())
+    });
+
+    const data = await response.json();
+
+    console.log("AI RESPONSE:", data);
+    setAiResult(data);
+
+  } catch (error) {
+    console.error("AI ERROR:", error);
+  }
+};
 
   useEffect(() => {
   localStorage.setItem(
@@ -1101,10 +1132,169 @@ const currentPageBottom =
             + Add Certification
           </button>
         </div>
-      </div>
+
+        {/* AI RESUME OPTIMIZATION */}
+<div className="ai-section">
+
+  <div className="ai-header">
+    <span className="ai-badge">AI POWERED</span>
+
+    <h2>Make Your Resume Job-Ready</h2>
+
+    <p>
+      Get AI-powered insights tailored to your target role.
+      Paste a job description and discover what your resume is missing.
+    </p>
+  </div>
+
+  <div className="jd-box">
+    <label>Target Job Description</label>
+
+    <textarea
+  placeholder="Paste the job description you're applying for..."
+  rows="8"
+  value={jobDescription}
+  onChange={(e) => setJobDescription(e.target.value)}
+/>
+  </div>
+
+  <button
+  type="button"
+  className="ai-btn"
+  onClick={analyzeResumeWithAI}
+>
+  ✨ Optimize My Resume
+</button>
+
+</div>
+
+</div>
 
       {/* RIGHT SIDE - PAGINATED A4 PREVIEW */}
       <div className="builder-preview">
+
+<div className="preview-navigation">
+
+  <button
+  type="button"
+  onClick={() => {
+    document
+      .getElementById("resume-preview-section")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+  }}
+>
+   View Resume
+</button>
+
+  <button
+  type="button"
+  onClick={() => {
+    document
+      .getElementById("ai-analysis-section")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+  }}
+>
+   AI Resume Analysis
+</button>
+</div>
+
+
+
+        {aiResult && (
+  <div id="ai-analysis-section" className="ai-analysis-card">
+
+    <div className="ai-analysis-header">
+      <div>
+        <span className="ai-label">AI POWERED</span>
+        <h2>Resume Intelligence</h2>
+        <p>
+          Smart insights tailored to your target job.
+        </p>
+      </div>
+
+      <div className="ats-score">
+        <span>{aiResult.atsScore}</span>
+        <small>/100</small>
+        <label>ATS SCORE</label>
+      </div>
+    </div>
+
+    <div className="ai-analysis-section">
+      <h3> Keyword Match</h3>
+
+      {aiResult.matchedKeywords?.length > 0 ? (
+        <div className="keyword-list">
+          {aiResult.matchedKeywords.map((keyword, index) => (
+            <span key={index}>
+              {keyword}
+            </span>
+          ))}
+        </div>
+      ) : (
+        <p className="ai-muted">
+          No strong keyword matches found yet.
+        </p>
+      )}
+    </div>
+
+    <div className="ai-analysis-section">
+      <h3>Missing Skills</h3>
+
+      <div className="ai-list">
+        {aiResult.missingSkills?.map((skill, index) => (
+          <div key={index}>
+            <span>+</span>
+            {skill}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div className="ai-analysis-section">
+      <h3> Missing Keywords</h3>
+
+      <div className="ai-list">
+        {aiResult.missingKeywords?.map((keyword, index) => (
+          <div key={index}>
+            <span>+</span>
+            {keyword}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div className="ai-analysis-section">
+      <h3>Resume Improvements</h3>
+
+      <div className="ai-list">
+        {aiResult.resumeImprovements?.map((improvement, index) => (
+          <div key={index}>
+            <span>✓</span>
+            {improvement}
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div className="ai-analysis-section">
+      <h3>Improved Summary</h3>
+
+      <p className="improved-summary">
+        {aiResult.improvedSummary}
+      </p>
+    </div>
+
+  </div>
+)}
+
+
+
         <div className="resume-actions">
   <button
     type="button"
@@ -1128,7 +1318,7 @@ const currentPageBottom =
     Clear Resume
   </button>
 </div>
-        <div className="resume-pages">
+        <div id="resume-preview-section" className="resume-pages">
           {pageGroups.map((group, pageIndex) => (
             <div className="resume-page-wrapper" key={pageIndex}>
               <div className="resume-page-number">
