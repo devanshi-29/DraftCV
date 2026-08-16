@@ -1163,7 +1163,7 @@ const currentPageBottom =
   className="ai-btn"
   onClick={analyzeResumeWithAI}
 >
-  ✨ Optimize My Resume
+   Optimize My Resume
 </button>
 
 </div>
