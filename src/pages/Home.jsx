@@ -4,6 +4,8 @@ import Templates from "../components/Templates";
 import NavBar from "../components/NavBar";
 import Hero from "../components/Hero";
 import HowItWorks from "../components/HowItWorks";
+import FAQ from "../components/FAQ";
+import Footer from "../components/Footer";
 const Home = () => {
   const navigate = useNavigate();
   return (
@@ -12,6 +14,8 @@ const Home = () => {
       <Hero/>
       <HowItWorks/>
       <Templates />
+      <FAQ />
+      <Footer />
     </>
   );
 };

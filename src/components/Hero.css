@@ -1,48 +1,71 @@
+/* =========================
+   HERO SECTION
+========================= */
+
 .hero {
   min-height: calc(100vh - 80px);
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 80px;
 
-  padding: 80px 80px 100px;
+  gap: 60px;
+  padding: 70px 70px 90px;
 
   background-color: var(--bg-primary);
+
+  overflow: hidden;
 }
 
 
-/* LEFT SIDE */
+/* =========================
+   LEFT CONTENT
+========================= */
 
 .hero-content {
-  max-width: 620px;
+  flex: 1;
+  max-width: 600px;
 }
+
 
 .hero-label {
   margin: 0 0 24px;
 
-  color:rgb(12, 148, 105);
+  color: rgb(12, 148, 105);
+
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 1.5px;
-  
 }
+
 
 .hero h1 {
   margin: 0;
 
   color: var(--text-primary);
-  font-size:60px;
+
+  font-size: 60px;
   line-height: 1.02;
   letter-spacing: -3px;
+
   font-weight: 600;
-  font-family:Georgia, 'Times New Roman', Times, serif
+
+  font-family: Georgia, "Times New Roman", Times, serif;
 }
 
+
 .hero h1 span {
-  color:rgb(213, 134, 7);
-  font-family: Georgia, 'Times New Roman', Times, serif;
+  color: rgb(213, 134, 7);
+
+  font-family: Georgia, "Times New Roman", Times, serif;
+
   font-weight: 400;
 }
+
+
+/* =========================
+   DESCRIPTION
+========================= */
 
 .hero-description {
   max-width: 560px;
@@ -50,18 +73,23 @@
   margin: 30px 0 36px;
 
   color: var(--text-secondary);
+
   font-size: 17px;
   line-height: 1.7;
 }
 
 
-/* BUTTONS */
+/* =========================
+   BUTTONS
+========================= */
 
 .hero-btns {
   display: flex;
   align-items: center;
+
   gap: 14px;
 }
+
 
 .hero-button {
   padding: 14px 22px;
@@ -77,140 +105,227 @@
 
   cursor: pointer;
 
-  transition: all 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
 
 .hero-button:hover {
   background-color: var(--accent-hover);
-  transform: translateY(-1px);
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
 }
+
 
 .hero-button:last-child {
   background-color: transparent;
   color: var(--text-primary);
 }
 
+
 .hero-button:last-child:hover {
   background-color: var(--bg-secondary);
 }
 
 
-/* RESUME PREVIEW */
+/* =========================
+   RIGHT SIDE IMAGE
+========================= */
 
 .hero-preview {
-  width: 45%;
+  flex: 1;
+
+  width: 50%;
+
   display: flex;
   justify-content: center;
   align-items: center;
-}
 
-.resume-paper {
-  width: 360px;
-  min-height: 400px;
-
-  padding: 42px;
-
-  background-color: #f5f5f2;
-  border-radius: 8px;
-
-  box-shadow:
-    0 25px 60px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.08);
-
-  transform: rotate(2deg);
+  position: relative;
 }
 
 
-/* RESUME CONTENT */
+/* =========================
+   HERO RESUME IMAGE
+========================= */
 
-.resume-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 35px;
-}
-
-.resume-name {
-  margin-top: 6px;
-  font-size: 18px;
-  color: black;
-}
-
-.resume-contact {
-  
-  color: #999;
-  font-size:12px;
-}
-
-.resume-line {
+.hero-resume-image {
   width: 100%;
-  height: 7px;
+  max-width: 650px;
 
-  margin-bottom: 10px;
+  height: auto;
 
-  background-color: #c7c7c7;
-  border-radius: 2px;
+  display: block;
+
+  object-fit: contain;
+
+  border-radius: 12px;
+
+  filter:
+    drop-shadow(0 25px 45px rgba(0, 0, 0, 0.55));
+
+  transition: transform 0.35s ease;
 }
 
-.resume-line.short {
-  width: 65%;
+
+.hero-resume-image:hover {
+  transform: scale(1.015);
 }
 
-.resume-section {
-  width: 90px;
-  height: 12px;
-  font-size:15px;
-  margin: 32px 0 18px;
-  color:rgb(12, 148, 105);
+
+/* =========================
+   TABLET
+========================= */
+
+@media (max-width: 1100px) {
+
+  .hero {
+    gap: 40px;
+
+    padding: 60px 45px 80px;
+  }
+
+
+  .hero h1 {
+    font-size: 52px;
+  }
+
+
+  .hero-description {
+    font-size: 16px;
+  }
+
+
+  .hero-resume-image {
+    max-width: 560px;
+  }
 }
+
+
+/* =========================
+   MOBILE / TABLET
+========================= */
 
 @media (max-width: 900px) {
+
   .hero {
+    min-height: auto;
+
     flex-direction: column;
+
     text-align: center;
-    padding: 70px 30px;
+
+    padding: 70px 30px 80px;
+
+    gap: 50px;
   }
+
 
   .hero-content {
     max-width: 700px;
+
+    width: 100%;
   }
+
 
   .hero-description {
     margin-left: auto;
     margin-right: auto;
   }
 
+
   .hero-btns {
     justify-content: center;
   }
 
+
   .hero-preview {
     width: 100%;
+
+    display: flex;
+    justify-content: center;
+  }
+
+
+  .hero-resume-image {
+    width: 90%;
+
+    max-width: 650px;
   }
 }
 
+
+/* =========================
+   SMALL MOBILE
+========================= */
+
 @media (max-width: 500px) {
+
   .hero {
-    padding: 50px 20px;
+    padding: 50px 20px 60px;
+
+    gap: 40px;
   }
 
+
+  .hero-label {
+    font-size: 11px;
+
+    letter-spacing: 1.2px;
+
+    margin-bottom: 20px;
+  }
+
+
   .hero h1 {
-    font-size: 45px;
+    font-size: 43px;
+
+    line-height: 1.05;
+
     letter-spacing: -2px;
   }
 
+
+  .hero-description {
+    font-size: 15px;
+
+    line-height: 1.6;
+
+    margin-top: 24px;
+    margin-bottom: 30px;
+  }
+
+
   .hero-btns {
     flex-direction: column;
+
     width: 100%;
+
+    gap: 12px;
   }
+
 
   .hero-button {
     width: 100%;
+
+    padding: 14px 20px;
   }
 
-  .resume-paper {
-    width: 300px;
-    min-height: 420px;
-    padding: 30px;
+
+  .hero-preview {
+    width: 100%;
+  }
+
+
+  .hero-resume-image {
+    width: 100%;
+
+    max-width: 430px;
+
+    border-radius: 8px;
   }
 }

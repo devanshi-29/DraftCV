@@ -1,353 +1,689 @@
+/* =========================
+   TEMPLATES SECTION
+========================= */
+
 .templates-section {
-  padding: 100px 6%;
+  padding: 110px 6% 120px;
   background: #0b0b0b;
   color: #fff;
 }
 
-.templates-section h2 {
-  margin: 0 0 16px;
 
-  color: var(--text-primary);
-  font-size: 42px;
-  line-height: 1.1;
-  letter-spacing: -1.5px;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+/* =========================
+   HEADING
+========================= */
+
+.templates-heading {
+  max-width: 700px;
+  margin: 0 0 55px;
+  text-align: left;
 }
 
-.templates-section p {
+.templates-section h2 {
+  margin: 0 0 14px;
+
+  color: var(--text-primary);
+
+  font-size: 46px;
+  line-height: 1.1;
+  letter-spacing: -1.8px;
+
+  font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+.templates-heading p {
   margin: 0;
 
   color: var(--text-secondary);
+
   font-size: 16px;
   line-height: 1.6;
 }
 
-.templates-heading {
-  text-align: left;
-  margin: 14px 0 6px;
-  margin-bottom: 45px;
-}
 
-.templates-heading p {
-  text-align:left;
-  margin: 0 auto 16px;
-  line-height: 1.4;
-}
+/* =========================
+   TEMPLATE GRID
+========================= */
 
 .templates-grid {
   display: grid;
-  grid-template-columns: repeat(2, 360px);
+
+  grid-template-columns: repeat(2, minmax(320px, 390px));
+
   justify-content: center;
-  gap: 28px;
+
+  gap: 32px;
+
+  max-width: 850px;
+  margin: 0 auto;
 }
+
+
+/* =========================
+   TEMPLATE CARD
+========================= */
 
 .template-card {
-  padding: 16px;
-  background: #121212;
-  border: 1px solid #292929;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-transition: transform 0.25s ease, border-color 0.25s ease;
-width: 360px;
+  width: 100%;
   box-sizing: border-box;
+
+  padding: 18px;
+
+  background: #111111;
+
+  border: 1px solid #292929;
+  border-radius: 16px;
+
   text-align: center;
+
+  box-shadow:
+    0 15px 35px rgba(0, 0, 0, 0.28);
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
+
 
 .template-card:hover {
-  transform: translateY(-5px);
-  border-color: #444;
+  transform: translateY(-8px);
+
+  border-color: rgb(12, 148, 105);
+
+  box-shadow:
+    0 20px 45px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(12, 148, 105, 0.12);
 }
+
+
+/* =========================
+   TEMPLATE PREVIEW
+========================= */
 
 .template-preview {
-  height: 280px;
+  height: 300px;
+
+  box-sizing: border-box;
+
   background: #fff;
-  border-radius: 6px;
-  padding: 20px;
-  margin-bottom: 18px;
+
+  border-radius: 9px;
+
+  padding: 22px;
+
+  margin-bottom: 22px;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.22);
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-.template-card h3 {
-  margin: 0 0 8px;
-  color: var(--text-primary);
-  font-size: 24px;
-  font-family: Georgia, 'Times New Roman', Times, serif;
+
+.template-card:hover .template-preview {
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.3);
 }
+
+
+/* =========================
+   TEMPLATE NAME
+========================= */
+
+.template-card h3 {
+  margin: 0 0 7px;
+
+  color: var(--text-primary);
+
+  font-size: 25px;
+
+  font-family: Georgia, "Times New Roman", Times, serif;
+
+  letter-spacing: -0.3px;
+}
+
 
 .template-card p {
   margin: 0 0 20px;
+
   color: var(--text-secondary);
-  font-size: 14px;
+
+  font-size: 13px;
+
   line-height: 1.5;
 }
 
+
+/* =========================
+   GRID TEMPLATE
+========================= */
 
 .grid-preview {
   color: #222;
   font-family: Arial, sans-serif;
 }
 
+
 .grid-name {
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 700;
+
   margin-bottom: 4px;
 }
 
+
+/* Green accent line */
+
+.grid-name::after {
+  content: "";
+
+  display: block;
+
+  width: 45px;
+  height: 3px;
+
+  margin-top: 8px;
+
+  background: rgb(12, 148, 105);
+
+  border-radius: 2px;
+}
+
+
 .grid-role {
   font-size: 10px;
+
   color: #555;
+
   margin-bottom: 8px;
 }
 
+
 .grid-contact {
   font-size: 6px;
+
   color: #777;
+
   padding-bottom: 12px;
+
   border-bottom: 1px solid #ddd;
 }
 
+
 .grid-title {
   font-size: 8px;
+
   font-weight: 700;
+
   margin-top: 14px;
   margin-bottom: 6px;
+
   letter-spacing: 0.5px;
 }
+
 
 .grid-line {
   width: 100%;
   height: 4px;
+
   background: #e1e1e1;
+
   margin-bottom: 5px;
+
   border-radius: 2px;
 }
+
 
 .grid-line.short {
   width: 65%;
 }
 
+
+/* =========================
+   LEDGER TEMPLATE
+========================= */
+
 .ledger-preview {
   color: #222;
+
   font-family: Georgia, "Times New Roman", Times, serif;
 }
 
+
 .ledger-name {
   font-size: 21px;
+
   font-weight: 700;
+
   margin-bottom: 6px;
 }
 
+
+/* Green accent line */
+
+.ledger-name::after {
+  content: "";
+
+  display: block;
+
+  width: 45px;
+  height: 3px;
+
+  margin-top: 8px;
+
+  background: rgb(12, 148, 105);
+
+  border-radius: 2px;
+}
+
+
 .ledger-contact {
   font-size: 7px;
+
   color: #777;
 }
+
 
 .ledger-divider {
   border-top: 1px solid #222;
+
   margin: 12px 0 16px;
 }
 
+
 .ledger-section {
   font-size: 8px;
+
   font-weight: 700;
+
   letter-spacing: 1px;
+
   margin-bottom: 8px;
 }
 
+
 .ledger-entry {
   display: flex;
+
   justify-content: space-between;
+
   align-items: center;
+
   gap: 8px;
 }
 
+
 .ledger-entry-title {
   font-size: 8px;
+
   font-weight: 600;
 }
 
+
 .ledger-entry-date {
   font-size: 6px;
+
   color: #777;
 }
+
 
 .ledger-line {
   width: 100%;
   height: 4px;
+
   background: #e1e1e1;
+
   margin-top: 7px;
+
   border-radius: 2px;
 }
+
 
 .ledger-line.short {
   width: 65%;
 }
 
+
 .ledger-skills {
   font-size: 7px;
+
   color: #555;
 }
 
+
+/* =========================
+   SIGNAL TEMPLATE
+========================= */
+
 .signal-preview {
   color: #222;
+
   font-family: Arial, sans-serif;
 }
 
+
 .signal-top {
   display: flex;
+
   justify-content: space-between;
+
   align-items: flex-start;
 }
 
+
 .signal-name {
   font-size: 20px;
+
   font-weight: 700;
 }
 
+
 .signal-role {
   font-size: 8px;
+
   color: #666;
+
   margin-top: 4px;
 }
 
+
 .signal-contact {
   font-size: 6px;
+
   color: #777;
+
   text-align: right;
+
   line-height: 1.6;
 }
 
+
+/* Green accent line */
+
 .signal-accent {
-  width: 45px;
+  width: 50px;
   height: 4px;
-  background: #222;
+
+  background: rgb(12, 148, 105);
+
   margin: 12px 0 16px;
+
+  border-radius: 2px;
 }
+
 
 .signal-section {
   margin-bottom: 14px;
 }
 
+
 .signal-section span {
   display: block;
+
   font-size: 8px;
+
   font-weight: 700;
+
   letter-spacing: 0.8px;
+
   margin-bottom: 7px;
 }
+
 
 .signal-line {
   width: 100%;
   height: 4px;
+
   background: #e1e1e1;
+
   margin-bottom: 5px;
+
   border-radius: 2px;
 }
+
 
 .signal-line.short {
   width: 60%;
 }
 
+
 .signal-skills {
   font-size: 7px;
+
   color: #555;
 }
 
-.template-card button {
-  display: block;
-  margin: 0 auto;
-  padding: 11px 22px;
-
-  background: transparent;
-  color: #d3d3d5;
-
-  border: 1px solid #555;
-  border-radius: 8px;
-
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-
-  cursor: pointer;
-
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease;
-  
-}
-
-.template-card button:hover {
-  color:rgb(3, 169, 3) ;
-  border-color:rgb(3, 169, 3);
-  background:transparent;
-  transform: translateY(-1px);
-}
 
 /* =========================
-   ORIGINAL TEMPLATE PREVIEW
+   ORIGINAL / CLASSIC
 ========================= */
 
 .original-preview {
   padding: 18px;
+
   background: white;
+
   color: #222;
+
   font-family: Arial, Helvetica, sans-serif;
 }
 
+
 .original-name {
   font-size: 18px;
+
   font-weight: 700;
+
   margin-bottom: 5px;
 }
+
+
+/* Green accent line */
+
+.original-name::after {
+  content: "";
+
+  display: block;
+
+  width: 45px;
+  height: 3px;
+
+  margin-top: 8px;
+
+  background: rgb(12, 148, 105);
+
+  border-radius: 2px;
+}
+
 
 .original-contact {
   font-size: 6px;
+
   color: #666;
+
   margin-bottom: 14px;
 }
 
+
 .original-section {
   font-size: 7px;
+
   font-weight: 700;
+
   margin-top: 10px;
   margin-bottom: 5px;
+
   border-bottom: 1px solid #333;
+
   padding-bottom: 3px;
 }
 
+
 .original-text {
   height: 4px;
+
   width: 90%;
+
   background: #ddd;
+
   margin-bottom: 4px;
 }
+
 
 .original-text.short {
   width: 60%;
 }
 
+
 .original-entry {
   display: flex;
+
   justify-content: space-between;
+
   font-size: 6px;
+
   margin-bottom: 5px;
 }
+
 
 .original-entry span {
   color: #777;
 }
 
+
 .original-skills {
   font-size: 6px;
+
   color: #555;
 }
 
+
 /* =========================
-   RESPONSIVE TEMPLATES
+   USE TEMPLATE BUTTON
 ========================= */
 
-@media (max-width: 768px) {
+.template-card button {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 11px 20px;
+
+  background: var(--accent);
+
+  color: var(--button-text);
+
+  border: 1px solid var(--accent);
+
+  border-radius: 8px;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.2px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.template-card button:hover {
+  background: rgb(230, 240, 237);
+
+  border-color: rgb(12, 148, 105);
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 20px rgba(12, 148, 105, 0.22);
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+
+  .templates-section {
+    padding: 90px 5% 100px;
+  }
+
+
+  .templates-grid {
+    grid-template-columns: repeat(2, minmax(280px, 1fr));
+
+    gap: 24px;
+  }
+
+
+  .template-preview {
+    height: 280px;
+  }
+}
+
+
+@media (max-width: 680px) {
+
+  .templates-section {
+    padding: 75px 20px 90px;
+  }
+
+
+  .templates-heading {
+    margin-bottom: 40px;
+  }
+
+
+  .templates-section h2 {
+    font-size: 38px;
+  }
+
+
   .templates-grid {
     grid-template-columns: 1fr;
+
+    max-width: 420px;
+  }
+
+
+  .template-preview {
+    height: 300px;
+  }
+}
+
+
+@media (max-width: 450px) {
+
+  .templates-section h2 {
+    font-size: 34px;
+  }
+
+
+  .templates-heading p {
+    font-size: 15px;
+  }
+
+
+  .template-card {
+    padding: 14px;
+  }
+
+
+  .template-preview {
+    height: 280px;
+
+    padding: 18px;
   }
 }
