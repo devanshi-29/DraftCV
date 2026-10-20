@@ -2,164 +2,483 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
-import "./Builder.css";
 import { useSearchParams } from "react-router-dom";
+import "./Builder.css";
+
+const API_URL = "http://localhost:3000/api/resumes";
 
 const PAGE_HEIGHT_MM = 297;
 const PAGE_PADDING_MM = 12;
-const PAGE_CONTENT_HEIGHT_PX = (PAGE_HEIGHT_MM - PAGE_PADDING_MM * 2) * 96 / 25.4;
+const PAGE_CONTENT_HEIGHT_PX =
+  ((PAGE_HEIGHT_MM - PAGE_PADDING_MM * 2) * 96) / 25.4;
+
+const DEFAULT_SPACING = {
+  letterSpacing: 0,
+  lineSpacing: 1.4,
+  sectionSpacing: 15,
+};
+
+const DEFAULT_SECTIONS = ["summary"];
+
+const getLocalResume = () => {
+  try {
+    return JSON.parse(localStorage.getItem("draftcv-resume")) || {};
+  } catch {
+    return {};
+  }
+};
+
+const getLocalSections = () => {
+  try {
+    return (
+      JSON.parse(localStorage.getItem("draftcv-sections")) ||
+      DEFAULT_SECTIONS
+    );
+  } catch {
+    return DEFAULT_SECTIONS;
+  }
+};
 
 const Builder = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  const resumeId = searchParams.get("resumeId");
   const selectedTemplate = searchParams.get("template") || "original";
-  
+
   const {
     register,
     watch,
     reset,
     control,
-    formState: { errors }
-  } = useForm({ mode: "onBlur",
-  defaultValues: JSON.parse(
-    localStorage.getItem("draftcv-resume")
-  ) || {} });
-
-
-  const downloadPDF = async () => {
-  const pages = document.querySelectorAll(
-  ".resume-pages .resume-preview"
-);
-
-  if (!pages.length) return;
-
-  const pdf = new jsPDF({
-    unit: "mm",
-    format: "a4",
-    orientation: "portrait"
+    formState: { errors },
+  } = useForm({
+    mode: "onBlur",
+    defaultValues: getLocalResume(),
   });
 
-  for (let i = 0; i < pages.length; i++) {
-    const canvas = await html2canvas(pages[i], {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff"
-    });
+  const [resumeTitle, setResumeTitle] = useState("Untitled Resume");
+  const [sections, setSections] = useState(getLocalSections);
+  const [spacing, setSpacing] = useState(DEFAULT_SPACING);
 
-    const imgData = canvas.toDataURL("image/jpeg", 0.98);
+  const [aiResult, setAiResult] = useState(null);
+  const [jobDescription, setJobDescription] = useState("");
+  const [pageGroups, setPageGroups] = useState([]);
 
-    if (i > 0) {
-      pdf.addPage();
+  const [isReady, setIsReady] = useState(false);
+  const [isLoadingResume, setIsLoadingResume] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
+  const [saveError, setSaveError] = useState("");
+
+  const measureRef = useRef(null);
+  const loadedResumeIdRef = useRef(null);
+  const formData = watch();
+
+  // --------------------------------------------------
+  // LOAD A SAVED RESUME
+  // --------------------------------------------------
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadResume = async () => {
+      setSaveMessage("");
+      setSaveError("");
+
+      if (!resumeId) {
+        setIsLoadingResume(false);
+        setIsReady(true);
+        loadedResumeIdRef.current = null;
+        return;
+      }
+
+      // Avoid reloading the same resume unnecessarily.
+      if (loadedResumeIdRef.current === resumeId) {
+        setIsReady(true);
+        return;
+      }
+
+      setIsLoadingResume(true);
+      setIsReady(false);
+
+      try {
+        const response = await fetch(`${API_URL}/${resumeId}`, {
+          method: "GET",
+          credentials: "include",
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "Failed to load resume.");
+        }
+
+        if (cancelled) return;
+
+        const savedResume = result.resume;
+
+        if (!savedResume) {
+          throw new Error("Resume data was not found.");
+        }
+
+        const savedData = savedResume.resumeData || {};
+
+        // Support the structure used by this builder.
+        const savedFormData =
+          savedData.formData && typeof savedData.formData === "object"
+            ? savedData.formData
+            : savedData;
+
+        reset(savedFormData);
+
+        setResumeTitle(savedResume.title || "Untitled Resume");
+
+        setSections(
+          Array.isArray(savedData.sections)
+            ? savedData.sections
+            : DEFAULT_SECTIONS
+        );
+
+        setSpacing({
+          ...DEFAULT_SPACING,
+          ...(savedData.spacing || {}),
+        });
+
+        if (
+          savedResume.template &&
+          savedResume.template !== selectedTemplate
+        ) {
+          setSearchParams(
+            (previous) => {
+              const updated = new URLSearchParams(previous);
+              updated.set("template", savedResume.template);
+              return updated;
+            },
+            { replace: true }
+          );
+        }
+
+        localStorage.setItem(
+          "draftcv-resume",
+          JSON.stringify(savedFormData)
+        );
+
+        localStorage.setItem(
+          "draftcv-sections",
+          JSON.stringify(
+            Array.isArray(savedData.sections)
+              ? savedData.sections
+              : DEFAULT_SECTIONS
+          )
+        );
+
+        loadedResumeIdRef.current = resumeId;
+        setSaveMessage("Saved resume loaded successfully.");
+      } catch (error) {
+        if (!cancelled) {
+          console.error("LOAD RESUME ERROR:", error);
+          setSaveError(error.message || "Failed to load resume.");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoadingResume(false);
+          setIsReady(true);
+        }
+      }
+    };
+
+    loadResume();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [resumeId, reset, setSearchParams]);
+
+  // --------------------------------------------------
+  // LOCAL STORAGE AUTOSAVE
+  // --------------------------------------------------
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    localStorage.setItem(
+      "draftcv-resume",
+      JSON.stringify(formData)
+    );
+  }, [formData, isReady]);
+
+  useEffect(() => {
+    if (!isReady) return;
+
+    localStorage.setItem(
+      "draftcv-sections",
+      JSON.stringify(sections)
+    );
+  }, [sections, isReady]);
+
+  // --------------------------------------------------
+  // SAVE NEW RESUME OR UPDATE EXISTING RESUME
+  // --------------------------------------------------
+
+  const saveResume = async () => {
+    if (isSaving || isLoadingResume || !isReady) return;
+
+    const title = resumeTitle.trim();
+
+    if (!title) {
+      setSaveError("Please enter a resume title.");
+      setSaveMessage("");
+      return;
     }
 
-    pdf.addImage(
-      imgData,
-      "JPEG",
-      0,
-      0,
-      210,
-      297
+    setIsSaving(true);
+    setSaveError("");
+    setSaveMessage("");
+
+    try {
+      const payload = {
+        title,
+        template: selectedTemplate,
+        resumeData: {
+          formData,
+          sections,
+          spacing,
+        },
+      };
+
+      const isUpdating = Boolean(resumeId);
+
+      const response = await fetch(
+        isUpdating ? `${API_URL}/${resumeId}` : API_URL,
+        {
+          method: isUpdating ? "PUT" : "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          result.message ||
+            "Unable to save resume. Please check your login."
+        );
+      }
+
+      if (!result.resume?._id) {
+        throw new Error("Resume was saved, but its ID was not returned.");
+      }
+
+      setResumeTitle(result.resume.title || title);
+
+      // A newly created resume gets an ID in the URL.
+      // Subsequent saves will update this same resume.
+      if (!isUpdating) {
+        setSearchParams((previous) => {
+          const updated = new URLSearchParams(previous);
+          updated.set("resumeId", result.resume._id);
+          return updated;
+        });
+
+        loadedResumeIdRef.current = result.resume._id;
+      }
+
+      setSaveMessage(
+        isUpdating
+          ? "Resume updated successfully."
+          : "Resume saved successfully."
+      );
+    } catch (error) {
+      console.error("SAVE RESUME ERROR:", error);
+      setSaveError(
+        error.message ||
+          "Something went wrong while saving your resume."
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // --------------------------------------------------
+  // PDF DOWNLOAD
+  // --------------------------------------------------
+
+  const downloadPDF = async () => {
+    const pages = document.querySelectorAll(
+      ".resume-pages .resume-preview"
     );
-  }
 
-  pdf.save("my-resume.pdf");
-};
+    if (!pages.length) {
+      setSaveError("There is no resume preview to download.");
+      return;
+    }
 
-const [sections, setSections] = useState(
-  JSON.parse(localStorage.getItem("draftcv-sections")) || ["summary"]
-);
+    try {
+      const pdf = new jsPDF({
+        unit: "mm",
+        format: "a4",
+        orientation: "portrait",
+      });
 
-const [spacing, setSpacing] = useState({
-  letterSpacing: 0,
-  lineSpacing: 1.4,
-  sectionSpacing: 15
-});
+      for (let i = 0; i < pages.length; i++) {
+        const canvas = await html2canvas(pages[i], {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: "#ffffff",
+        });
 
-   const [aiResult, setAiResult] = useState(null);
+        const imgData = canvas.toDataURL("image/jpeg", 0.98);
 
-   const [jobDescription, setJobDescription] = useState("");
+        if (i > 0) {
+          pdf.addPage();
+        }
 
-  const [pageGroups, setPageGroups] = useState([]);
-  const measureRef = useRef(null);
+        pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
+      }
+
+      const safeTitle =
+        resumeTitle.trim().replace(/[<>:"/\\|?*]+/g, "-") ||
+        "my-resume";
+
+      pdf.save(`${safeTitle}.pdf`);
+    } catch (error) {
+      console.error("PDF DOWNLOAD ERROR:", error);
+      setSaveError("Failed to generate PDF. Please try again.");
+    }
+  };
+
+  // --------------------------------------------------
+  // CLEAR CURRENT RESUME FORM
+  // --------------------------------------------------
+
+  const clearResume = () => {
+    const confirmed = window.confirm(
+      "Clear the current resume form? Unsaved form data will be removed."
+    );
+
+    if (!confirmed) return;
+
+    reset({});
+    setSections([]);
+    setSpacing(DEFAULT_SPACING);
+    setResumeTitle("Untitled Resume");
+    setAiResult(null);
+    setJobDescription("");
+    setSaveMessage("");
+    setSaveError("");
+
+    loadedResumeIdRef.current = null;
+
+    localStorage.removeItem("draftcv-resume");
+    localStorage.removeItem("draftcv-sections");
+
+    // Keep the saved MongoDB record intact.
+    // Remove its ID from this editing session.
+    setSearchParams({
+      template: selectedTemplate,
+    });
+  };
+
+  // --------------------------------------------------
+  // REACT HOOK FORM FIELD ARRAYS
+  // --------------------------------------------------
 
   const {
     fields: educationFields,
     append: appendEducation,
-    remove: removeEducation
-  } = useFieldArray({ control, name: "education" });
+    remove: removeEducation,
+  } = useFieldArray({
+    control,
+    name: "education",
+  });
 
   const {
     fields: projectFields,
     append: appendProject,
-    remove: removeProject
-  } = useFieldArray({ control, name: "projects" });
+    remove: removeProject,
+  } = useFieldArray({
+    control,
+    name: "projects",
+  });
 
   const {
     fields: skillFields,
     append: appendSkill,
-    remove: removeSkill
-  } = useFieldArray({ control, name: "skills" });
+    remove: removeSkill,
+  } = useFieldArray({
+    control,
+    name: "skills",
+  });
 
   const {
     fields: certificationFields,
     append: appendCertification,
-    remove: removeCertification
-  } = useFieldArray({ control, name: "certifications" });
-
-  const { fields, append, remove } = useFieldArray({
+    remove: removeCertification,
+  } = useFieldArray({
     control,
-    name: "experiences"
+    name: "certifications",
   });
 
-  const formData = watch();
+  const {
+    fields,
+    append,
+    remove,
+  } = useFieldArray({
+    control,
+    name: "experiences",
+  });
 
-  const prepareAIData = () => {
-  return {
+  // --------------------------------------------------
+  // AI RESUME ANALYSIS
+  // --------------------------------------------------
+
+  const prepareAIData = () => ({
     resume: formData,
-    jobDescription: jobDescription
+    jobDescription,
+  });
+
+  const analyzeResumeWithAI = async () => {
+    setSaveError("");
+    setSaveMessage("");
+
+    if (!jobDescription.trim()) {
+      setSaveError("Please paste a job description first.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/analyze-resume", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(prepareAIData()),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "AI analysis failed.");
+      }
+
+      console.log("AI RESPONSE:", data);
+      setAiResult(data);
+    } catch (error) {
+      console.error("AI ERROR:", error);
+      setSaveError(
+        error.message || "Failed to analyze your resume."
+      );
+    }
   };
-};
 
-const analyzeResumeWithAI = async () => {
-  try {
-    const response = await fetch("/api/analyze-resume", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(prepareAIData())
-    });
+  // --------------------------------------------------
+  // BUILD RESUME PREVIEW BLOCKS
+  // --------------------------------------------------
 
-    const data = await response.json();
-
-    console.log("AI RESPONSE:", data);
-    setAiResult(data);
-
-  } catch (error) {
-    console.error("AI ERROR:", error);
-  }
-};
-
-  useEffect(() => {
-  localStorage.setItem(
-    "draftcv-resume",
-    JSON.stringify(formData)
-  );
-}, [formData]);
-
-useEffect(() => {
-  localStorage.setItem(
-    "draftcv-sections",
-    JSON.stringify(sections)
-  );
-}, [sections]);
-
-  /*
-   * IMPORTANT:
-   * Each item below is one logical resume block.
-   * Pagination moves complete blocks to the next A4 page.
-   * Nothing is manually hard-coded to "page 1/page 2".
-   */
   const resumeBlocks = [];
 
   resumeBlocks.push({
@@ -170,7 +489,11 @@ useEffect(() => {
 
         <p className="resume-contact">
           {formData.website ? (
-            <a href={formData.website} target="_blank" rel="noreferrer">
+            <a
+              href={formData.website}
+              target="_blank"
+              rel="noreferrer"
+            >
               {formData.websiteName || "Website"}
             </a>
           ) : (
@@ -184,7 +507,7 @@ useEffect(() => {
           {formData.location || "Location"}
         </p>
       </div>
-    )
+    ),
   });
 
   if (sections.includes("summary")) {
@@ -198,7 +521,7 @@ useEffect(() => {
               "Your professional summary will appear here."}
           </p>
         </div>
-      )
+      ),
     });
   }
 
@@ -246,7 +569,7 @@ useEffect(() => {
               </div>
             ))}
           </div>
-        )
+        ),
       });
     });
   }
@@ -277,7 +600,7 @@ useEffect(() => {
             </div>
           ))}
         </div>
-      )
+      ),
     });
   }
 
@@ -323,7 +646,7 @@ useEffect(() => {
             </div>
           ))}
         </div>
-      )
+      ),
     });
   }
 
@@ -347,7 +670,7 @@ useEffect(() => {
             ))}
           </ul>
         </div>
-      )
+      ),
     });
   }
 
@@ -360,7 +683,10 @@ useEffect(() => {
 
           <div className="certifications-preview">
             {formData.certifications.map((certification, index) => (
-              <div className="preview-certification" key={index}>
+              <div
+                className="preview-certification"
+                key={index}
+              >
                 <div className="certification-row">
                   <div className="certification-info">
                     <span className="certification-name">
@@ -395,119 +721,104 @@ useEffect(() => {
             ))}
           </div>
         </div>
-      )
+      ),
     });
   }
 
-  /*
-   * Measure every logical block and calculate the page number.
-   * A block is kept together so headings/content don't overlap.
-   */
+  // --------------------------------------------------
+  // AUTOMATIC A4 PAGINATION
+  // --------------------------------------------------
+
   useLayoutEffect(() => {
-  const calculatePages = () => {
-    const container = measureRef.current;
-    if (!container) return;
+    if (!isReady) return undefined;
 
-    const elements = Array.from(
-      container.querySelectorAll("[data-resume-block]")
-    );
+    const calculatePages = () => {
+      const container = measureRef.current;
+      if (!container) return;
 
-    if (!elements.length) {
-      setPageGroups([]);
-      return;
-    }
+      const elements = Array.from(
+        container.querySelectorAll("[data-resume-block]")
+      );
 
-    const measurePage = container.querySelector(".resume-preview");
-    const containerRect = measurePage?.getBoundingClientRect();
-
-    if (!measurePage || !containerRect) return;
-
-    const computedStyle = window.getComputedStyle(measurePage);
-    const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
-    const contentTop = containerRect.top + paddingTop;
-
-    const groups = [];
-    let currentPage = [];
-    let currentPageStart = 0;
-
-    elements.forEach((element) => {
-      const rect = element.getBoundingClientRect();
-
-      const top = rect.top - contentTop;
-      const bottom = rect.bottom - contentTop;
-
-      /*
-       * First block always starts from Page 1.
-       */
-      if (currentPage.length === 0) {
-        currentPageStart = 0;
+      if (!elements.length) {
+        setPageGroups([]);
+        return;
       }
 
-      const BOTTOM_GAP_PX = 15;
+      const measurePage = container.querySelector(".resume-preview");
+      const containerRect = measurePage?.getBoundingClientRect();
 
-const currentPageBottom =
-  (currentPageStart + 1) * PAGE_CONTENT_HEIGHT_PX - BOTTOM_GAP_PX;
+      if (!measurePage || !containerRect) return;
 
-      /*
-       * Move the block to the next page ONLY when
-       * its top has actually reached the next page.
-       *
-       * We don't use `bottom > currentPageBottom`
-       * because that was causing Summary to jump
-       * completely to Page 2.
-       */
-      if (
-        currentPage.length > 0 &&
-        bottom > currentPageBottom
-      ) {
+      const computedStyle = window.getComputedStyle(measurePage);
+      const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+      const contentTop = containerRect.top + paddingTop;
+
+      const groups = [];
+      let currentPage = [];
+      let currentPageStart = 0;
+
+      elements.forEach((element) => {
+        const rect = element.getBoundingClientRect();
+
+        const bottom = rect.bottom - contentTop;
+
+        if (currentPage.length === 0) {
+          currentPageStart = groups.length;
+        }
+
+        const BOTTOM_GAP_PX = 15;
+
+        const currentPageBottom =
+          (currentPageStart + 1) * PAGE_CONTENT_HEIGHT_PX -
+          BOTTOM_GAP_PX;
+
+        if (
+          currentPage.length > 0 &&
+          bottom > currentPageBottom
+        ) {
+          groups.push(currentPage);
+          currentPage = [];
+          currentPageStart += 1;
+        }
+
+        currentPage.push(element.dataset.resumeBlock);
+      });
+
+      if (currentPage.length > 0) {
         groups.push(currentPage);
-        currentPage = [];
-        currentPageStart += 1;
       }
 
-      currentPage.push(element.dataset.resumeBlock);
-    });
+      setPageGroups(groups);
+    };
 
-    /*
-     * Add the last page.
-     */
-    if (currentPage.length > 0) {
-      groups.push(currentPage);
+    const frame = requestAnimationFrame(calculatePages);
+
+    const resizeObserver = new ResizeObserver(calculatePages);
+
+    if (measureRef.current) {
+      resizeObserver.observe(measureRef.current);
     }
 
-    setPageGroups(groups);
-  };
+    window.addEventListener("resize", calculatePages);
 
-  const frame = requestAnimationFrame(calculatePages);
+    return () => {
+      cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", calculatePages);
+    };
+  }, [
+    formData,
+    sections,
+    educationFields,
+    projectFields,
+    skillFields,
+    certificationFields,
+    fields,
+    spacing,
+    isReady,
+  ]);
 
-  const resizeObserver = new ResizeObserver(calculatePages);
-
-  if (measureRef.current) {
-    resizeObserver.observe(measureRef.current);
-  }
-
-  window.addEventListener("resize", calculatePages);
-
-  return () => {
-    cancelAnimationFrame(frame);
-    resizeObserver.disconnect();
-    window.removeEventListener("resize", calculatePages);
-  };
-}, [
-  formData,
-  sections,
-  educationFields,
-  projectFields,
-  skillFields,
-  certificationFields,
-  fields,
-  spacing
-]);
-
-
-  /*
-   * Recalculate when fonts/layout settle.
-   */
   useEffect(() => {
     const timer = setTimeout(() => {
       window.dispatchEvent(new Event("resize"));
@@ -519,9 +830,12 @@ const currentPageBottom =
   const getBlockById = (id) =>
     resumeBlocks.find((block) => block.id === id);
 
+  // --------------------------------------------------
+  // UI
+  // --------------------------------------------------
+
   return (
     <div className="builder">
-
       {/* LEFT SIDE - FORM */}
       <div className="builder-form">
         <h1>Build your resume</h1>
@@ -530,65 +844,107 @@ const currentPageBottom =
           Fill in your details and see your resume update live.
         </p>
 
+        {/* SAVE / UPDATE RESUME */}
+        <div className="form-section resume-save-section">
+          <h2>Save Your Resume</h2>
 
+          <label htmlFor="resume-title">Resume Title</label>
 
+          <input
+            id="resume-title"
+            type="text"
+            placeholder="e.g. Frontend Developer Resume"
+            value={resumeTitle}
+            onChange={(event) => setResumeTitle(event.target.value)}
+            maxLength={100}
+          />
+
+          <button
+            type="button"
+            className="save-resume-btn"
+            onClick={saveResume}
+            disabled={isSaving || isLoadingResume || !isReady}
+          >
+            {isSaving
+              ? "Saving..."
+              : resumeId
+                ? "Update Resume"
+                : "Save Resume"}
+          </button>
+
+          {isLoadingResume && (
+            <p role="status">Loading saved resume...</p>
+          )}
+
+          {saveMessage && (
+            <p className="save-success" role="status">
+              {saveMessage}
+            </p>
+          )}
+
+          {saveError && (
+            <p className="error" role="alert">
+              {saveError}
+            </p>
+          )}
+        </div>
+
+        {/* SPACING CUSTOMIZATION */}
         <div className="form-section spacing-section">
-  <h2>Spacing Customization</h2>
+          <h2>Spacing Customization</h2>
 
-  <label>
-    Letter Spacing: {spacing.letterSpacing}px
-  </label>
+          <label>
+            Letter Spacing: {spacing.letterSpacing}px
+          </label>
 
-  <input
-    type="range"
-    min="-1"
-    max="5"
-    step="0.1"
-    value={spacing.letterSpacing}
-    onChange={(e) =>
-      setSpacing({
-        ...spacing,
-        letterSpacing: Number(e.target.value)
-      })
-    }
-  />
+          <input
+            type="range"
+            min="-1"
+            max="5"
+            step="0.1"
+            value={spacing.letterSpacing}
+            onChange={(event) =>
+              setSpacing({
+                ...spacing,
+                letterSpacing: Number(event.target.value),
+              })
+            }
+          />
 
-  <label>
-    Line Spacing: {spacing.lineSpacing}
-  </label>
+          <label>Line Spacing: {spacing.lineSpacing}</label>
 
-  <input
-    type="range"
-    min="1"
-    max="2.5"
-    step="0.1"
-    value={spacing.lineSpacing}
-    onChange={(e) =>
-      setSpacing({
-        ...spacing,
-        lineSpacing: Number(e.target.value)
-      })
-    }
-  />
+          <input
+            type="range"
+            min="1"
+            max="2.5"
+            step="0.1"
+            value={spacing.lineSpacing}
+            onChange={(event) =>
+              setSpacing({
+                ...spacing,
+                lineSpacing: Number(event.target.value),
+              })
+            }
+          />
 
-  <label>
-    Section Spacing: {spacing.sectionSpacing}px
-  </label>
+          <label>
+            Section Spacing: {spacing.sectionSpacing}px
+          </label>
 
-  <input
-    type="range"
-    min="0"
-    max="40"
-    step="1"
-    value={spacing.sectionSpacing}
-    onChange={(e) =>
-      setSpacing({
-        ...spacing,
-        sectionSpacing: Number(e.target.value)
-      })
-    }
-  />
-</div>
+          <input
+            type="range"
+            min="0"
+            max="40"
+            step="1"
+            value={spacing.sectionSpacing}
+            onChange={(event) =>
+              setSpacing({
+                ...spacing,
+                sectionSpacing: Number(event.target.value),
+              })
+            }
+          />
+        </div>
 
         {/* PERSONAL INFORMATION */}
         <div className="form-section">
@@ -597,7 +953,9 @@ const currentPageBottom =
           <input
             type="text"
             placeholder="Full name"
-            {...register("name", { required: "Name is required" })}
+            {...register("name", {
+              required: "Name is required",
+            })}
           />
 
           {errors.name && (
@@ -611,8 +969,8 @@ const currentPageBottom =
               required: "Email is required",
               pattern: {
                 value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Enter a valid email"
-              }
+                message: "Enter a valid email",
+              },
             })}
           />
 
@@ -627,8 +985,8 @@ const currentPageBottom =
               required: "Phone number is required",
               pattern: {
                 value: /^[0-9]{10}$/,
-                message: "Enter a valid 10-digit phone number"
-              }
+                message: "Enter a valid 10-digit phone number",
+              },
             })}
           />
 
@@ -648,8 +1006,8 @@ const currentPageBottom =
             {...register("website", {
               pattern: {
                 value: /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/.*)?$/,
-                message: "Enter a valid website URL"
-              }
+                message: "Enter a valid website URL",
+              },
             })}
           />
 
@@ -726,7 +1084,7 @@ const currentPageBottom =
               type="text"
               placeholder="Company"
               {...register(`experiences.${index}.company`, {
-                required: "Company name is required"
+                required: "Company name is required",
               })}
             />
 
@@ -740,7 +1098,7 @@ const currentPageBottom =
               type="text"
               placeholder="Job title"
               {...register(`experiences.${index}.position`, {
-                required: "Job title is required"
+                required: "Job title is required",
               })}
             />
 
@@ -754,7 +1112,7 @@ const currentPageBottom =
               type="text"
               placeholder="Start date"
               {...register(`experiences.${index}.startDate`, {
-                required: "Start date is required"
+                required: "Start date is required",
               })}
             />
 
@@ -773,7 +1131,7 @@ const currentPageBottom =
             <textarea
               placeholder="Describe your role and responsibilities..."
               {...register(`experiences.${index}.description`, {
-                required: "Description is required"
+                required: "Description is required",
               })}
             />
 
@@ -795,7 +1153,7 @@ const currentPageBottom =
                 position: "",
                 startDate: "",
                 endDate: "",
-                description: ""
+                description: "",
               })
             }
           >
@@ -822,7 +1180,7 @@ const currentPageBottom =
               type="text"
               placeholder="University / College"
               {...register(`education.${index}.institution`, {
-                required: "University / College is required"
+                required: "University / College is required",
               })}
             />
 
@@ -836,7 +1194,7 @@ const currentPageBottom =
               type="text"
               placeholder="Degree"
               {...register(`education.${index}.degree`, {
-                required: "Degree is required"
+                required: "Degree is required",
               })}
             />
 
@@ -850,7 +1208,7 @@ const currentPageBottom =
               type="text"
               placeholder="Field of Study"
               {...register(`education.${index}.field`, {
-                required: "Field of study is required"
+                required: "Field of study is required",
               })}
             />
 
@@ -864,7 +1222,7 @@ const currentPageBottom =
               type="text"
               placeholder="Start date"
               {...register(`education.${index}.startDate`, {
-                required: "Start date is required"
+                required: "Start date is required",
               })}
             />
 
@@ -891,7 +1249,7 @@ const currentPageBottom =
                 degree: "",
                 field: "",
                 startDate: "",
-                endDate: ""
+                endDate: "",
               })
             }
           >
@@ -918,7 +1276,7 @@ const currentPageBottom =
               type="text"
               placeholder="Project name"
               {...register(`projects.${index}.name`, {
-                required: "Project name is required"
+                required: "Project name is required",
               })}
             />
 
@@ -932,7 +1290,7 @@ const currentPageBottom =
               type="text"
               placeholder="Technologies used (e.g. React, JavaScript)"
               {...register(`projects.${index}.technologies`, {
-                required: "Technologies are required"
+                required: "Technologies are required",
               })}
             />
 
@@ -945,7 +1303,7 @@ const currentPageBottom =
             <textarea
               placeholder="Describe your project..."
               {...register(`projects.${index}.description`, {
-                required: "Project description is required"
+                required: "Project description is required",
               })}
             />
 
@@ -961,8 +1319,8 @@ const currentPageBottom =
               {...register(`projects.${index}.link`, {
                 pattern: {
                   value: /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/.*)?$/,
-                  message: "Enter a valid project URL"
-                }
+                  message: "Enter a valid project URL",
+                },
               })}
             />
 
@@ -982,7 +1340,7 @@ const currentPageBottom =
                 name: "",
                 technologies: "",
                 description: "",
-                link: ""
+                link: "",
               })
             }
           >
@@ -1009,7 +1367,7 @@ const currentPageBottom =
               type="text"
               placeholder="Skill heading (e.g. Core Subjects)"
               {...register(`skills.${index}.heading`, {
-                required: "Skill heading is required"
+                required: "Skill heading is required",
               })}
             />
 
@@ -1023,7 +1381,7 @@ const currentPageBottom =
               type="text"
               placeholder="Description (e.g. OOPS, CN, OS, DBMS)"
               {...register(`skills.${index}.description`, {
-                required: "Skill description is required"
+                required: "Skill description is required",
               })}
             />
 
@@ -1041,7 +1399,7 @@ const currentPageBottom =
             onClick={() =>
               appendSkill({
                 heading: "",
-                description: ""
+                description: "",
               })
             }
           >
@@ -1068,7 +1426,7 @@ const currentPageBottom =
               type="text"
               placeholder="Certification name"
               {...register(`certifications.${index}.name`, {
-                required: "Certification name is required"
+                required: "Certification name is required",
               })}
             />
 
@@ -1082,7 +1440,7 @@ const currentPageBottom =
               type="text"
               placeholder="Issuing organization"
               {...register(`certifications.${index}.organization`, {
-                required: "Issuing organization is required"
+                required: "Issuing organization is required",
               })}
             />
 
@@ -1104,8 +1462,8 @@ const currentPageBottom =
               {...register(`certifications.${index}.link`, {
                 pattern: {
                   value: /^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/.*)?$/,
-                  message: "Enter a valid certificate URL"
-                }
+                  message: "Enter a valid certificate URL",
+                },
               })}
             />
 
@@ -1125,7 +1483,7 @@ const currentPageBottom =
                 name: "",
                 organization: "",
                 date: "",
-                link: ""
+                link: "",
               })
             }
           >
@@ -1134,202 +1492,197 @@ const currentPageBottom =
         </div>
 
         {/* AI RESUME OPTIMIZATION */}
-<div className="ai-section">
+        <div className="ai-section">
+          <div className="ai-header">
+            <span className="ai-badge">AI POWERED</span>
 
-  <div className="ai-header">
-    <span className="ai-badge">AI POWERED</span>
+            <h2>Make Your Resume Job-Ready</h2>
 
-    <h2>Make Your Resume Job-Ready</h2>
+            <p>
+              Get AI-powered insights tailored to your target role.
+              Paste a job description and discover what your resume
+              is missing.
+            </p>
+          </div>
 
-    <p>
-      Get AI-powered insights tailored to your target role.
-      Paste a job description and discover what your resume is missing.
-    </p>
-  </div>
+          <div className="jd-box">
+            <label>Target Job Description</label>
 
-  <div className="jd-box">
-    <label>Target Job Description</label>
+            <textarea
+              placeholder="Paste the job description you're applying for..."
+              rows="8"
+              value={jobDescription}
+              onChange={(event) =>
+                setJobDescription(event.target.value)
+              }
+            />
+          </div>
 
-    <textarea
-  placeholder="Paste the job description you're applying for..."
-  rows="8"
-  value={jobDescription}
-  onChange={(e) => setJobDescription(e.target.value)}
-/>
-  </div>
-
-  <button
-  type="button"
-  className="ai-btn"
-  onClick={analyzeResumeWithAI}
->
-   Optimize My Resume
-</button>
-
-</div>
-
-</div>
-
-      {/* RIGHT SIDE - PAGINATED A4 PREVIEW */}
-      <div className="builder-preview">
-
-<div className="preview-navigation">
-
-  <button
-  type="button"
-  onClick={() => {
-    document
-      .getElementById("resume-preview-section")
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-  }}
->
-   View Resume
-</button>
-
-  <button
-  type="button"
-  onClick={() => {
-    document
-      .getElementById("ai-analysis-section")
-      ?.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-  }}
->
-   AI Resume Analysis
-</button>
-</div>
-
-
-
-        {aiResult && (
-  <div id="ai-analysis-section" className="ai-analysis-card">
-
-    <div className="ai-analysis-header">
-      <div>
-        <span className="ai-label">AI POWERED</span>
-        <h2>Resume Intelligence</h2>
-        <p>
-          Smart insights tailored to your target job.
-        </p>
-      </div>
-
-      <div className="ats-score">
-        <span>{aiResult.atsScore}</span>
-        <small>/100</small>
-        <label>ATS SCORE</label>
-      </div>
-    </div>
-
-    <div className="ai-analysis-section">
-      <h3> Keyword Match</h3>
-
-      {aiResult.matchedKeywords?.length > 0 ? (
-        <div className="keyword-list">
-          {aiResult.matchedKeywords.map((keyword, index) => (
-            <span key={index}>
-              {keyword}
-            </span>
-          ))}
+          <button
+            type="button"
+            className="ai-btn"
+            onClick={analyzeResumeWithAI}
+          >
+            Optimize My Resume
+          </button>
         </div>
-      ) : (
-        <p className="ai-muted">
-          No strong keyword matches found yet.
-        </p>
-      )}
-    </div>
-
-    <div className="ai-analysis-section">
-      <h3>Missing Skills</h3>
-
-      <div className="ai-list">
-        {aiResult.missingSkills?.map((skill, index) => (
-          <div key={index}>
-            <span>+</span>
-            {skill}
-          </div>
-        ))}
       </div>
-    </div>
 
-    <div className="ai-analysis-section">
-      <h3> Missing Keywords</h3>
+      {/* RIGHT SIDE - RESUME PREVIEW */}
+      <div className="builder-preview">
+        <div className="preview-navigation">
+          <button
+            type="button"
+            onClick={() =>
+              document
+                .getElementById("resume-preview-section")
+                ?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                })
+            }
+          >
+            View Resume
+          </button>
 
-      <div className="ai-list">
-        {aiResult.missingKeywords?.map((keyword, index) => (
-          <div key={index}>
-            <span>+</span>
-            {keyword}
+          <button
+            type="button"
+            onClick={() =>
+              document
+                .getElementById("ai-analysis-section")
+                ?.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                })
+            }
+          >
+            AI Resume Analysis
+          </button>
+        </div>
+
+        {/* AI ANALYSIS RESULTS */}
+        {aiResult && (
+          <div
+            id="ai-analysis-section"
+            className="ai-analysis-card"
+          >
+            <div className="ai-analysis-header">
+              <div>
+                <span className="ai-label">AI POWERED</span>
+                <h2>Resume Intelligence</h2>
+                <p>Smart insights tailored to your target job.</p>
+              </div>
+
+              <div className="ats-score">
+                <span>{aiResult.atsScore}</span>
+                <small>/100</small>
+                <label>ATS SCORE</label>
+              </div>
+            </div>
+
+            <div className="ai-analysis-section">
+              <h3>Keyword Match</h3>
+
+              {aiResult.matchedKeywords?.length > 0 ? (
+                <div className="keyword-list">
+                  {aiResult.matchedKeywords.map((keyword, index) => (
+                    <span key={index}>{keyword}</span>
+                  ))}
+                </div>
+              ) : (
+                <p className="ai-muted">
+                  No strong keyword matches found yet.
+                </p>
+              )}
+            </div>
+
+            <div className="ai-analysis-section">
+              <h3>Missing Skills</h3>
+
+              <div className="ai-list">
+                {aiResult.missingSkills?.map((skill, index) => (
+                  <div key={index}>
+                    <span>+</span>
+                    {skill}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="ai-analysis-section">
+              <h3>Missing Keywords</h3>
+
+              <div className="ai-list">
+                {aiResult.missingKeywords?.map((keyword, index) => (
+                  <div key={index}>
+                    <span>+</span>
+                    {keyword}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="ai-analysis-section">
+              <h3>Resume Improvements</h3>
+
+              <div className="ai-list">
+                {aiResult.resumeImprovements?.map(
+                  (improvement, index) => (
+                    <div key={index}>
+                      <span>✓</span>
+                      {improvement}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+
+            <div className="ai-analysis-section">
+              <h3>Improved Summary</h3>
+
+              <p className="improved-summary">
+                {aiResult.improvedSummary}
+              </p>
+            </div>
           </div>
-        ))}
-      </div>
-    </div>
+        )}
 
-    <div className="ai-analysis-section">
-      <h3>Resume Improvements</h3>
-
-      <div className="ai-list">
-        {aiResult.resumeImprovements?.map((improvement, index) => (
-          <div key={index}>
-            <span>✓</span>
-            {improvement}
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <div className="ai-analysis-section">
-      <h3>Improved Summary</h3>
-
-      <p className="improved-summary">
-        {aiResult.improvedSummary}
-      </p>
-    </div>
-
-  </div>
-)}
-
-
-
+        {/* RESUME ACTIONS */}
         <div className="resume-actions">
-  <button
-    type="button"
-    className="download-pdf-btn"
-    onClick={downloadPDF}
-  >
-    Download PDF
-  </button>
+          <button
+            type="button"
+            className="download-pdf-btn"
+            onClick={downloadPDF}
+          >
+            Download PDF
+          </button>
 
-  <button
-    type="button"
-    className="clear-resume-btn"
-    onClick={() => {
-      localStorage.removeItem("draftcv-resume");
-      localStorage.removeItem("draftcv-sections");
+          <button
+            type="button"
+            className="clear-resume-btn"
+            onClick={clearResume}
+          >
+            Clear Resume
+          </button>
+        </div>
 
-      reset({});
-      setSections([]);
-    }}
-  >
-    Clear Resume
-  </button>
-</div>
+        {/* PAGINATED PREVIEW */}
         <div id="resume-preview-section" className="resume-pages">
           {pageGroups.map((group, pageIndex) => (
-            <div className="resume-page-wrapper" key={pageIndex}>
+            <div
+              className="resume-page-wrapper"
+              key={pageIndex}
+            >
               <div className="resume-page-number">
                 Page {pageIndex + 1}
               </div>
 
-              <div className={`resume-preview ${selectedTemplate}-template`}
-                 style={{
-                 letterSpacing: `${spacing.letterSpacing}px`,
-                   lineHeight: spacing.lineSpacing
-                  }}
+              <div
+                className={`resume-preview ${selectedTemplate}-template`}
+                style={{
+                  letterSpacing: `${spacing.letterSpacing}px`,
+                  lineHeight: spacing.lineSpacing,
+                }}
               >
                 {group.map((id) => {
                   const block = getBlockById(id);
@@ -1339,9 +1692,9 @@ const currentPageBottom =
                       className="resume-block-wrapper"
                       key={id}
                       style={{
-                       marginBottom: `${spacing.sectionSpacing}px`
-                       }}
-                     >
+                        marginBottom: `${spacing.sectionSpacing}px`,
+                      }}
+                    >
                       {block?.node}
                     </div>
                   );
@@ -1351,17 +1704,18 @@ const currentPageBottom =
           ))}
         </div>
 
-        {/* Hidden measurement copy used only for automatic pagination */}
+        {/* HIDDEN MEASUREMENT COPY FOR PAGINATION */}
         <div
           ref={measureRef}
           className="resume-measure"
           aria-hidden="true"
         >
-          <div className={`resume-preview ${selectedTemplate}-template`}
-             style={{
+          <div
+            className={`resume-preview ${selectedTemplate}-template`}
+            style={{
               letterSpacing: `${spacing.letterSpacing}px`,
-              lineHeight: spacing.lineSpacing
-                }}
+              lineHeight: spacing.lineSpacing,
+            }}
           >
             {resumeBlocks.map((block) => (
               <div
@@ -1369,8 +1723,8 @@ const currentPageBottom =
                 data-resume-block={block.id}
                 className="resume-block-wrapper"
                 style={{
-                  marginBottom: `${spacing.sectionSpacing}px`
-                  }}
+                  marginBottom: `${spacing.sectionSpacing}px`,
+                }}
               >
                 {block.node}
               </div>

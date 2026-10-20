@@ -1,0 +1,344 @@
+
+/* =========================
+   Main Page
+========================= */
+
+.my-resumes-page {
+  min-height: 100vh;
+  padding: 56px 7%;
+  background: #0b0b0f;
+  color: #f5f5f7;
+}
+
+/* =========================
+   Header
+========================= */
+
+.my-resumes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.my-resumes-label {
+  color: rgb(12, 148, 105);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.my-resumes-header h1 {
+  margin: 10px 0;
+  font-size: clamp(30px, 4vw, 44px);
+}
+
+.my-resumes-subtitle {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 15px;
+}
+
+/* =========================
+   Main Buttons
+========================= */
+
+.new-resume-btn,
+.create-first-resume-btn {
+  padding: 13px 20px;
+  border: 1px solid #ffffff;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.new-resume-btn:hover,
+.create-first-resume-btn:hover {
+  background: rgb(12, 148, 105);
+  color: #ffffff;
+  border-color: rgb(12, 148, 105);
+  transform: translateY(-2px);
+}
+
+/* =========================
+   Resume Content Container
+========================= */
+
+.resumes-content {
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #55555f;
+  border-radius: 18px;
+  background: #111116;
+  padding: 32px;
+}
+
+.resumes-empty-state {
+  max-width: 440px;
+  text-align: center;
+}
+
+/* =========================
+   Empty State Icon
+========================= */
+
+.empty-resume-icon {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 24px;
+  border: 1px solid rgba(12, 148, 105, 0.45);
+  border-radius: 20px;
+  background: rgba(12, 148, 105, 0.12);
+  color: rgb(12, 148, 105);
+  font-size: 34px;
+}
+
+.resumes-empty-state h2 {
+  margin-bottom: 12px;
+  font-size: 23px;
+}
+
+.resumes-empty-state p {
+  margin: 0 0 24px;
+  color: #a1a1aa;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* =========================
+   Loading State
+========================= */
+
+.resumes-status {
+  padding: 60px 20px;
+  color: #a1a1aa;
+  text-align: center;
+}
+
+/* =========================
+   Error Message
+========================= */
+
+.resumes-error {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 14px 18px;
+  border: 1px solid #713737;
+  border-radius: 10px;
+  background: #251414;
+  color: #fecaca;
+  font-size: 14px;
+}
+
+.resumes-error button {
+  padding: 8px 12px;
+  border: 1px solid #713737;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* =========================
+   Saved Resumes Heading
+========================= */
+
+.resumes-list-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.resumes-list-heading h2 {
+  margin: 0;
+  font-size: 21px;
+}
+
+.resumes-list-heading span {
+  color: #a1a1aa;
+  font-size: 14px;
+}
+
+/* =========================
+   Resume Cards Grid
+========================= */
+
+.resumes-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(260px, 1fr)
+  );
+  gap: 22px;
+}
+
+/* =========================
+   Individual Resume Card
+========================= */
+
+.resume-card {
+  overflow: hidden;
+  border: 1px solid #55555f;
+  border-radius: 14px;
+  background: #111116;
+  transition:
+    border-color 0.25s ease,
+    transform 0.25s ease;
+}
+
+.resume-card:hover {
+  border-color: #ffffff;
+  transform: translateY(-3px);
+}
+
+/* =========================
+   Resume Card Preview
+========================= */
+
+.resume-card-preview {
+  min-height: 125px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: linear-gradient(135deg, #211832, #171722);
+}
+
+.resume-file-icon {
+  color: rgb(12, 148, 105);
+  font-size: 48px;
+}
+
+.resume-template-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 5px 9px;
+  border: 1px solid rgba(12, 148, 105, 0.45);
+  border-radius: 20px;
+  background: #111916;
+  color: rgb(12, 148, 105);
+  font-size: 11px;
+}
+
+/* =========================
+   Resume Card Details
+========================= */
+
+.resume-card-details {
+  padding: 20px;
+}
+
+.resume-card-details h3 {
+  overflow: hidden;
+  margin: 0 0 8px;
+  color: #f5f5f7;
+  font-size: 17px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resume-card-details p {
+  margin: 0 0 20px;
+  color: #a1a1aa;
+  font-size: 12px;
+}
+
+/* =========================
+   Resume Card Actions
+========================= */
+
+.resume-card-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.resume-edit-btn,
+.resume-delete-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+/* Edit Button */
+
+.resume-edit-btn {
+  background: #ffffff;
+  color: #000000;
+}
+
+.resume-edit-btn:hover {
+  background: rgb(12, 148, 105);
+  color: #ffffff;
+  border-color: rgb(12, 148, 105);
+}
+
+/* Delete Button */
+
+.resume-delete-btn {
+  border-color: #713737;
+  background: transparent;
+  color: #fca5a5;
+}
+
+.resume-delete-btn:hover {
+  border-color: #a94444;
+  background: #291719;
+  color: #ffffff;
+}
+
+.resume-delete-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* =========================
+   Responsive Layout
+========================= */
+
+@media (max-width: 600px) {
+  .my-resumes-page {
+    padding: 36px 20px;
+  }
+
+  .my-resumes-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .resumes-content {
+    min-height: 340px;
+    padding: 24px 18px;
+  }
+
+  .resumes-error {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .resumes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resumes-list-heading {
+    gap: 12px;
+  }
+}

@@ -1,0 +1,135 @@
+
+.signup-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #0f172a, #172554, #0f172a);
+  color: #ffffff;
+}
+
+.signup-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 24px 30px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.85);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.3);
+}
+
+.signup-card h1 {
+  margin: 0 0 8px;
+  font-size: 27px;
+  font-weight: 700;
+  text-align: center;
+  color: #ffffff;
+}
+
+.signup-card > p {
+  margin: 8px 0;
+  color: #a9b8d0;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.signup-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 16px;
+}
+
+.signup-card label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.signup-card input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  outline: none;
+  background: #111c31;
+  color: #ffffff;
+  font-size: 13px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.signup-card input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.signup-card input::placeholder {
+  color: #8493aa;
+}
+
+.signup-card button {
+  margin-top: 8px;
+  padding: 11px;
+  border: none;
+  border-radius: 8px;
+  background: #3b82f6;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.signup-card button:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.signup-card a {
+  color: #60a5fa;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.signup-card a:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .signup-page {
+    padding: 14px;
+  }
+
+  .signup-card {
+    padding: 22px 20px;
+  }
+
+  .signup-card h1 {
+    font-size: 24px;
+  }
+}
+
+.signup-message {
+  margin: 8px 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.signup-message.error {
+  color: #f87171;
+}
+
+.signup-message.success {
+  color: #4ade80;
+}
+
+.signup-card input:invalid:not(:placeholder-shown) {
+  border-color: #f87171;
+}

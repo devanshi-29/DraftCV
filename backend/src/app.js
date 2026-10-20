@@ -1,19 +1,24 @@
-const express=require("express")
+
+const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
-const app=express();
+const app = express();
 
-const authRoutes=require("./routes/auth.route")
+const authRoutes = require("./routes/auth.route");
+const resumeRoutes = require("./routes/resume.route");
 
-app.use(cors({
+app.use(
+  cors({
     origin: "http://localhost:5173",
-    credentials: true
-}));
+    credentials: true,
+  })
+);
 
-app.use(express.json())
+app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/resumes", resumeRoutes);
 
-module.exports=app
+module.exports = app;
