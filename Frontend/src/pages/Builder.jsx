@@ -5,7 +5,7 @@ import { jsPDF } from "jspdf";
 import { useSearchParams } from "react-router-dom";
 import "./Builder.css";
 
-const API_URL = "http://localhost:3000/api/resumes";
+const API_URL = "https://draftcv.onrender.com/api/resumes";
 
 const PAGE_HEIGHT_MM = 297;
 const PAGE_PADDING_MM = 12;

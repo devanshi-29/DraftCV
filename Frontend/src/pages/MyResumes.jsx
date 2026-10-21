@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./MyResumes.css";
 
-const API_URL = "http://localhost:3000/api/resumes";
+const API_URL = "https://draftcv.onrender.com/api/resumes";
 
 const templateNames = {
   grid: "Grid",

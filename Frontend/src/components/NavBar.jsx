@@ -13,7 +13,7 @@ const NavBar = () => {
   const fetchUser = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/auth/me",
+        "https://draftcv.onrender.com",
         {
           credentials: "include",
         }
@@ -38,7 +38,7 @@ const NavBar = () => {
   const handleLogout = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/auth/logout",
+        "https://draftcv.onrender.com/api/auth/me",
         {
           method: "POST",
           credentials: "include",

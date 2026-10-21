@@ -11,7 +11,7 @@ const ProtectedRoute = () => {
     const checkAuth = async () => {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/auth/me",
+          "https://draftcv.onrender.com/api/auth/me",
           {
             credentials: "include",
           }
