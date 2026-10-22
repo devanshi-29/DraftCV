@@ -72,7 +72,8 @@
   color: #8493aa;
 }
 
-.signup-card button {
+/* Main signup button */
+.signup-card form > button[type="submit"] {
   margin-top: 8px;
   padding: 11px;
   border: none;
@@ -85,9 +86,15 @@
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
-.signup-card button:hover {
+.signup-card form > button[type="submit"]:hover {
   background: #2563eb;
   transform: translateY(-1px);
+}
+
+.signup-card form > button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .signup-card a {
@@ -101,20 +108,63 @@
   text-decoration: underline;
 }
 
-@media (max-width: 480px) {
-  .signup-page {
-    padding: 14px;
-  }
-
-  .signup-card {
-    padding: 22px 20px;
-  }
-
-  .signup-card h1 {
-    font-size: 24px;
-  }
+/* Password input and eye icon */
+.password-input-wrapper {
+  position: relative;
+  width: 100%;
 }
 
+.signup-card .password-input-wrapper input {
+  width: 100%;
+  padding-right: 42px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #ffffff;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.password-toggle:hover,
+.password-toggle:focus,
+.password-toggle:active {
+  background: transparent;
+  color: #ffffff;
+  box-shadow: none;
+  transform: translateY(-50%);
+}
+
+.password-toggle svg {
+  display: block;
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.password-toggle:focus-visible {
+  outline: 1px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* Signup messages */
 .signup-message {
   margin: 8px 0;
   text-align: center;
@@ -132,4 +182,19 @@
 
 .signup-card input:invalid:not(:placeholder-shown) {
   border-color: #f87171;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .signup-page {
+    padding: 14px;
+  }
+
+  .signup-card {
+    padding: 22px 20px;
+  }
+
+  .signup-card h1 {
+    font-size: 24px;
+  }
 }
