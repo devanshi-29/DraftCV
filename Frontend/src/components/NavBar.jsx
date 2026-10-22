@@ -10,50 +10,54 @@ const NavBar = () => {
   const [user, setUser] = useState(null);
 
   // Fetch logged-in user's details
-  const fetchUser = async () => {
-    try {
-      const response = await fetch(
-        "https://draftcv.onrender.com",
-        {
-          credentials: "include",
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser(data);
-      } else {
-        setUser(null);
+ 
+const fetchUser = async () => {
+  try {
+    const response = await fetch(
+      "https://draftcv.onrender.com/api/auth/me",
+      {
+        credentials: "include",
       }
-    } catch (error) {
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      setUser(data);
+    } else {
       setUser(null);
     }
-  };
+  } catch (error) {
+    setUser(null);
+  }
+};
+
 
   useEffect(() => {
     fetchUser();
   }, []);
 
   // Logout user
-  const handleLogout = async () => {
-    try {
-      const response = await fetch(
-        "https://draftcv.onrender.com/api/auth/me",
-        {
-          method: "POST",
-          credentials: "include",
-        }
-      );
-
-      if (response.ok) {
-        setUser(null);
-        setShowProfile(false);
-        navigate("/");
+  
+const handleLogout = async () => {
+  try {
+    const response = await fetch(
+      "https://draftcv.onrender.com/api/auth/logout",
+      {
+        method: "POST",
+        credentials: "include",
       }
-    } catch (error) {
-      console.error("Logout failed:", error);
+    );
+
+    if (response.ok) {
+      setUser(null);
+      setShowProfile(false);
+      navigate("/");
     }
-  };
+  } catch (error) {
+    console.error("Logout failed:", error);
+  }
+};
+
 
   return (
     <nav className="navbar">
@@ -153,7 +157,7 @@ const NavBar = () => {
                     <button
                       onClick={() => {
                         setShowProfile(false);
-                        navigate("/builder");
+                        navigate("/my-resumes");
                       }}
                     >
                       My Resume

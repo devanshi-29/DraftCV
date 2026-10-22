@@ -35,16 +35,18 @@ router.get("/me", authMiddleware, async (req, res) => {
 });
 
 // Logout
+
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
   });
 
   return res.status(200).json({
     message: "Logged out successfully",
   });
 });
+
 
 module.exports=router
