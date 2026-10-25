@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./NavBar.css";
+import API_BASE_URL from "../api";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -13,8 +14,7 @@ const NavBar = () => {
  
 const fetchUser = async () => {
   try {
-    const response = await fetch(
-      "https://draftcv.onrender.com/api/auth/me",
+    const response = await fetch(`${API_BASE_URL}/api/auth/logout`,
       {
         credentials: "include",
       }
@@ -40,8 +40,7 @@ const fetchUser = async () => {
   
 const handleLogout = async () => {
   try {
-    const response = await fetch(
-      "https://draftcv.onrender.com/api/auth/logout",
+    const response = await fetch(`${API_BASE_URL}/api/auth/logout`,
       {
         method: "POST",
         credentials: "include",

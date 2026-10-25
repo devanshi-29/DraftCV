@@ -4,8 +4,9 @@ import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { useSearchParams } from "react-router-dom";
 import "./Builder.css";
+import API_BASE_URL from "../api";
 
-const API_URL = "https://draftcv.onrender.com/api/resumes";
+const API_URL = `${API_BASE_URL}/api/resumes`;
 
 const PAGE_HEIGHT_MM = 297;
 const PAGE_PADDING_MM = 12;
@@ -13,6 +14,7 @@ const PAGE_CONTENT_HEIGHT_PX =
   ((PAGE_HEIGHT_MM - PAGE_PADDING_MM * 2) * 96) / 25.4;
 
 const DEFAULT_SPACING = {
+  fontSize: 11,
   letterSpacing: 0,
   lineSpacing: 1.4,
   sectionSpacing: 15,
@@ -59,6 +61,7 @@ const Builder = () => {
   const [resumeTitle, setResumeTitle] = useState("Untitled Resume");
   const [sections, setSections] = useState(getLocalSections);
   const [spacing, setSpacing] = useState(DEFAULT_SPACING);
+  const [isFitToOnePage, setIsFitToOnePage] = useState(false);
 
   const [aiResult, setAiResult] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
@@ -892,6 +895,23 @@ const Builder = () => {
         {/* SPACING CUSTOMIZATION */}
         <div className="form-section spacing-section">
           <h2>Spacing Customization</h2>
+          <label>
+          Font Size: {spacing.fontSize}px
+          </label>
+
+          <input
+  type="range"
+  min="9"
+  max="14"
+  step="0.5"
+  value={spacing.fontSize}
+  onChange={(event) =>
+    setSpacing({
+      ...spacing,
+      fontSize: Number(event.target.value),
+    })
+  }
+/>
 
           <label>
             Letter Spacing: {spacing.letterSpacing}px
@@ -1647,24 +1667,33 @@ const Builder = () => {
           </div>
         )}
 
-        {/* RESUME ACTIONS */}
-        <div className="resume-actions">
-          <button
-            type="button"
-            className="download-pdf-btn"
-            onClick={downloadPDF}
-          >
-            Download PDF
-          </button>
+       {/* RESUME ACTIONS */}
+<div className="resume-actions">
+  <button
+    type="button"
+    className={`fit-page-btn ${isFitToOnePage ? "active" : ""}`}
+    onClick={() => setIsFitToOnePage((previous) => !previous)}
+    aria-pressed={isFitToOnePage}
+  >
+    {isFitToOnePage ? "Exit Fit Mode" : "Fit to 1 Page"}
+  </button>
 
-          <button
-            type="button"
-            className="clear-resume-btn"
-            onClick={clearResume}
-          >
-            Clear Resume
-          </button>
-        </div>
+  <button
+    type="button"
+    className="download-pdf-btn"
+    onClick={downloadPDF}
+  >
+    Download PDF
+  </button>
+
+  <button
+    type="button"
+    className="clear-resume-btn"
+    onClick={clearResume}
+  >
+    Clear Resume
+  </button>
+</div>
 
         {/* PAGINATED PREVIEW */}
         <div id="resume-preview-section" className="resume-pages">
@@ -1678,10 +1707,16 @@ const Builder = () => {
               </div>
 
               <div
-                className={`resume-preview ${selectedTemplate}-template`}
+                className={`resume-preview ${selectedTemplate}-template ${
+  isFitToOnePage ? "fit-one-page" : ""
+}`}
                 style={{
-                  letterSpacing: `${spacing.letterSpacing}px`,
-                  lineHeight: spacing.lineSpacing,
+                  fontSize: `${spacing.fontSize}px`,
+                  "--resume-font-size": `${spacing.fontSize}px`,
+                  "--resume-line-spacing": spacing.lineSpacing,
+"--resume-section-spacing": `${spacing.sectionSpacing}px`,
+  letterSpacing: `${spacing.letterSpacing}px`,
+  lineHeight: spacing.lineSpacing,
                 }}
               >
                 {group.map((id) => {
@@ -1711,10 +1746,16 @@ const Builder = () => {
           aria-hidden="true"
         >
           <div
-            className={`resume-preview ${selectedTemplate}-template`}
+            className={`resume-preview ${selectedTemplate}-template ${
+  isFitToOnePage ? "fit-one-page" : ""
+}`}
             style={{
-              letterSpacing: `${spacing.letterSpacing}px`,
-              lineHeight: spacing.lineSpacing,
+              fontSize: `${spacing.fontSize}px`,
+              "--resume-font-size": `${spacing.fontSize}px`,
+              "--resume-line-spacing": spacing.lineSpacing,
+"--resume-section-spacing": `${spacing.sectionSpacing}px`,
+  letterSpacing: `${spacing.letterSpacing}px`,
+  lineHeight: spacing.lineSpacing,
             }}
           >
             {resumeBlocks.map((block) => (

@@ -778,9 +778,7 @@
   margin-bottom: 24px;
 }
 
-/* =========================
-   SPACING CUSTOMIZATION
-========================= */
+
 
 .spacing-section label {
   display: block;
@@ -804,16 +802,13 @@
   margin-bottom: 0;
 }
 
-/* =========================
-   GRID TEMPLATE
-========================= */
 
 .resume-preview.grid-template {
   font-family: Arial, Helvetica, sans-serif;
   color: #111827;
 }
 
-/* Personal Header */
+
 .resume-preview.grid-template .resume-personal-block {
   text-align: left;
   margin-bottom: 20px;
@@ -837,7 +832,7 @@
   text-decoration: none;
 }
 
-/* Grid - Summary */
+
 .resume-preview.grid-template .resume-block h2 {
   font-size: 13px;
   font-weight: 700;
@@ -855,16 +850,14 @@
   margin: 0;
 }
 
-/* =========================================
-   GRID TEMPLATE — COMPLETE
-========================================= */
+
 
 .resume-preview.grid-template {
   font-family: Arial, Helvetica, sans-serif;
   color: #111827;
 }
 
-/* ---------- Personal ---------- */
+
 
 .resume-preview.grid-template .resume-personal-block {
   text-align: left;
@@ -889,7 +882,7 @@
   text-decoration: none;
 }
 
-/* ---------- All Section Headings ---------- */
+
 
 .resume-preview.grid-template .resume-block > h2 {
   font-size: 13px;
@@ -901,7 +894,7 @@
   margin: 0 0 10px;
 }
 
-/* ---------- General Text ---------- */
+
 
 .resume-preview.grid-template .resume-block p {
   font-size: 11px;
@@ -909,7 +902,7 @@
   margin: 0;
 }
 
-/* ---------- Experience ---------- */
+
 
 .resume-preview.grid-template .preview-experience {
   margin-bottom: 12px;
@@ -945,7 +938,7 @@
   color: #374151;
 }
 
-/* ---------- Education ---------- */
+
 
 .resume-preview.grid-template .preview-education {
   margin-bottom: 10px;
@@ -962,7 +955,7 @@
   font-size: 10.5px;
 }
 
-/* ---------- Projects ---------- */
+
 
 .resume-preview.grid-template .preview-project {
   margin-bottom: 12px;
@@ -1002,8 +995,6 @@
   margin-bottom: 3px;
   color: #374151;
 }
-
-/* ---------- Skills ---------- */
 
 .resume-preview.grid-template .skills-preview {
   margin: 0;
@@ -1981,4 +1972,131 @@
     width: 100%;
   }
 
+}
+
+/* Fit to One Page */
+.fit-page-btn {
+  padding: 10px 16px;
+  border: 1px solid #64748b;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.fit-page-btn:hover,
+.fit-page-btn.active {
+  background: #334155;
+  border-color: #64748b;
+  color: #ffffff;
+}
+
+/* Compact resume layout */
+/* =========================
+   FIT TO ONE PAGE
+========================= */
+
+.resume-preview.fit-one-page {
+  padding: 8mm !important;
+  font-size: var(--resume-font-size, 11px) !important;
+  line-height: inherit !important;
+}
+
+/* Body text */
+.resume-preview.fit-one-page p,
+.resume-preview.fit-one-page li,
+.resume-preview.fit-one-page a,
+.resume-preview.fit-one-page span {
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+/* Headings */
+.resume-preview.fit-one-page h1 {
+  font-size: 1.8em !important;
+  line-height: 1.1 !important;
+  margin-bottom: 3px !important;
+}
+
+.resume-preview.fit-one-page h2 {
+  font-size: 1.2em !important;
+  line-height: 1.15 !important;
+  margin-top: 5px !important;
+  margin-bottom: 3px !important;
+}
+
+.resume-preview.fit-one-page h3 {
+  font-size: 1.05em !important;
+  line-height: 1.15 !important;
+  margin-bottom: 2px !important;
+}
+
+.resume-preview.fit-one-page .resume-block-wrapper {
+  margin-bottom: 4px !important;
+}
+
+.resume-preview.fit-one-page ul {
+  margin-top: 2px !important;
+  margin-bottom: 3px !important;
+  padding-left: 14px !important;
+}
+
+.resume-preview.fit-one-page .preview-experience,
+.resume-preview.fit-one-page .preview-education,
+.resume-preview.fit-one-page .preview-project,
+.resume-preview.fit-one-page .preview-certification {
+  margin-bottom: 3px !important;
+}
+
+/* =========================
+   RESUME SPACING CONTROLS
+========================= */
+
+/* Normal mode: font-size control */
+.resume-preview:not(.fit-one-page) {
+  font-size: var(--resume-font-size, 11px) !important;
+}
+
+.resume-preview:not(.fit-one-page) p,
+.resume-preview:not(.fit-one-page) li,
+.resume-preview:not(.fit-one-page) a,
+.resume-preview:not(.fit-one-page) span {
+  font-size: inherit !important;
+}
+
+/* Maintain heading hierarchy */
+.resume-preview:not(.fit-one-page) h1 {
+  font-size: 2.2em !important;
+}
+
+.resume-preview:not(.fit-one-page) h2 {
+  font-size: 1.3em !important;
+}
+
+.resume-preview:not(.fit-one-page) h3 {
+  font-size: 1.1em !important;
+}
+
+/* Line spacing in both modes */
+.resume-preview p,
+.resume-preview li {
+  line-height: var(--resume-line-spacing, 1.4) !important;
+}
+
+/* Section spacing in both modes */
+.resume-preview .resume-block-wrapper {
+  margin-bottom: var(--resume-section-spacing, 15px) !important;
+}
+
+/* Fit mode: respect the line-spacing slider */
+.resume-preview.fit-one-page p,
+.resume-preview.fit-one-page li {
+  line-height: var(--resume-line-spacing, 1.4) !important;
+}
+
+/* Fit mode: respect the section-spacing slider */
+.resume-preview.fit-one-page .resume-block-wrapper {
+  margin-bottom: var(--resume-section-spacing, 15px) !important;
 }

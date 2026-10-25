@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 .env
 .vercel
+
+# Frontend environment files
+Frontend/.env
+Frontend/.env.*
+!Frontend/.env.example

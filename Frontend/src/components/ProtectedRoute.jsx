@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import API_BASE_URL from "../api";
 
 const ProtectedRoute = () => {
   const [checking, setChecking] = useState(true);
@@ -11,7 +12,7 @@ const ProtectedRoute = () => {
     const checkAuth = async () => {
       try {
         const response = await fetch(
-          "https://draftcv.onrender.com/api/auth/me",
+          `${API_BASE_URL}/api/auth/me`,
           {
             credentials: "include",
           }

@@ -2,8 +2,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./MyResumes.css";
+import API_BASE_URL from "../api";
 
-const API_URL = "https://draftcv.onrender.com/api/resumes";
+const API_URL = `${API_BASE_URL}/api/resumes`;
 
 const templateNames = {
   grid: "Grid",
