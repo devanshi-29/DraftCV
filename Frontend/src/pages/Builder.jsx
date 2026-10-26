@@ -488,172 +488,246 @@ const Builder = () => {
     id: "personal",
     node: (
       <div className="resume-block resume-personal-block">
-        <h1>{formData.name || "Your Name"}</h1>
+  {formData.name?.trim() && <h1>{formData.name}</h1>}
 
-        <p className="resume-contact">
-          {formData.website ? (
-            <a
-              href={formData.website}
-              target="_blank"
-              rel="noreferrer"
-            >
-              {formData.websiteName || "Website"}
-            </a>
-          ) : (
-            formData.websiteName || "Website"
-          )}
-          {" | "}
-          {formData.email || "email@example.com"}
-          {" | "}
-          {formData.phone || "Phone"}
-          {" | "}
-          {formData.location || "Location"}
-        </p>
-      </div>
+  {(() => {
+    const contacts = [
+      {
+        value: formData.websiteName?.trim() || formData.website?.trim(),
+        link: formData.website?.trim(),
+      },
+      { value: formData.email?.trim() },
+      { value: formData.phone?.trim() },
+      { value: formData.location?.trim() },
+    ].filter((item) => item.value);
+
+    if (contacts.length === 0) return null;
+
+    return (
+      <p className="resume-contact">
+        {contacts.map((item, index) => (
+          <span key={`${item.value}-${index}`}>
+            {index > 0 && " | "}
+            {item.link ? (
+              <a href={item.link} target="_blank" rel="noreferrer">
+                {item.value}
+              </a>
+            ) : (
+              item.value
+            )}
+          </span>
+        ))}
+      </p>
+    );
+  })()}
+</div>
     ),
   });
 
-  if (sections.includes("summary")) {
+  if (sections.includes("summary") && formData.summary?.trim()) {
+  resumeBlocks.push({
+    id: "summary",
+    node: (
+      <div className="resume-block">
+        <h2>Summary</h2>
+        <p>{formData.summary}</p>
+      </div>
+    ),
+  });
+}
+
+  if (formData.experiences?.length > 0) {
+  ["Experience", "Internship"].forEach((type) => {
+    const filteredExperiences = formData.experiences.filter(
+      (experience) =>
+        experience.type === type &&
+        [
+          experience.position,
+          experience.company,
+          experience.startDate,
+          experience.endDate,
+          experience.description,
+        ].some((value) => value?.trim())
+    );
+
+    if (filteredExperiences.length === 0) return;
+
     resumeBlocks.push({
-      id: "summary",
+      id: `experience-${type}`,
       node: (
-        <div className="resume-block">
-          <h2>Summary</h2>
-          <p>
-            {formData.summary ||
-              "Your professional summary will appear here."}
-          </p>
+        <div className="resume-block experience-group">
+          <h2>{type}</h2>
+
+          {filteredExperiences.map((experience, index) => {
+            const titleParts = [
+              experience.position?.trim(),
+              experience.company?.trim(),
+            ].filter(Boolean);
+
+            const dates = [
+              experience.startDate?.trim(),
+              experience.endDate?.trim(),
+            ].filter(Boolean);
+
+            const descriptionPoints = experience.description
+              ?.split("\n")
+              .map((point) => point.trim())
+              .filter(Boolean) || [];
+
+            return (
+              <div className="preview-experience" key={index}>
+                {(titleParts.length > 0 || dates.length > 0) && (
+                  <div className="gap-btw-comp-date">
+                    {titleParts.length > 0 && (
+                      <h3>{titleParts.join(" | ")}</h3>
+                    )}
+
+                    {dates.length > 0 && (
+                      <p>{dates.join(" - ")}</p>
+                    )}
+                  </div>
+                )}
+
+                {descriptionPoints.length > 0 && (
+                  <ul className="experience-bullets">
+                    {descriptionPoints.map((point, i) => (
+                      <li key={i}>{point}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
         </div>
       ),
     });
-  }
-
-  if (formData.experiences?.length > 0) {
-    ["Experience", "Internship"].forEach((type) => {
-      const filteredExperiences = formData.experiences.filter(
-        (experience) => experience.type === type
-      );
-
-      if (filteredExperiences.length === 0) return;
-
-      resumeBlocks.push({
-        id: `experience-${type}`,
-        node: (
-          <div className="resume-block experience-group">
-            <h2>{type}</h2>
-
-            {filteredExperiences.map((experience, index) => (
-              <div className="preview-experience" key={index}>
-                <div className="gap-btw-comp-date">
-                  <h3>
-                    {experience.position || "Job Title"} |{" "}
-                    {experience.company || "Company"}
-                  </h3>
-
-                  <p>
-                    {experience.startDate || "Start Date"}
-                    {" - "}
-                    {experience.endDate || "Present"}
-                  </p>
-                </div>
-
-                {experience.description ? (
-                  <ul className="experience-bullets">
-                    {experience.description
-                      .split("\n")
-                      .filter((point) => point.trim() !== "")
-                      .map((point, i) => (
-                        <li key={i}>{point}</li>
-                      ))}
-                  </ul>
-                ) : (
-                  <p>Your experience description</p>
-                )}
-              </div>
-            ))}
-          </div>
-        ),
-      });
-    });
-  }
+  });
+}
 
   if (formData.education?.length > 0) {
+  const validEducation = formData.education.filter((education) =>
+    [
+      education.degree,
+      education.institution,
+      education.startDate,
+      education.endDate,
+      education.field,
+    ].some((value) => value?.trim())
+  );
+
+  if (validEducation.length > 0) {
     resumeBlocks.push({
       id: "education",
       node: (
         <div className="resume-block">
           <h2>Education</h2>
 
-          {formData.education.map((education, index) => (
-            <div className="preview-education" key={index}>
-              <div className="gap-btw-comp-date">
-                <h3>
-                  {education.degree || "Degree"} |{" "}
-                  {education.institution || "University / College"}
-                </h3>
+          {validEducation.map((education, index) => {
+            const titleParts = [
+              education.degree?.trim(),
+              education.institution?.trim(),
+            ].filter(Boolean);
 
-                <p>
-                  {education.startDate || "Start Date"}
-                  {" - "}
-                  {education.endDate || "Present"}
-                </p>
+            const dates = [
+              education.startDate?.trim(),
+              education.endDate?.trim(),
+            ].filter(Boolean);
+
+            return (
+              <div className="preview-education" key={index}>
+                {(titleParts.length > 0 || dates.length > 0) && (
+                  <div className="gap-btw-comp-date">
+                    {titleParts.length > 0 && (
+                      <h3>{titleParts.join(" | ")}</h3>
+                    )}
+
+                    {dates.length > 0 && (
+                      <p>{dates.join(" - ")}</p>
+                    )}
+                  </div>
+                )}
+
+                {education.field?.trim() && (
+                  <p>{education.field.trim()}</p>
+                )}
               </div>
-
-              <p>{education.field || "Field of Study"}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ),
     });
   }
-
+}
   if (formData.projects?.length > 0) {
+  const validProjects = formData.projects.filter((project) =>
+    [
+      project.name,
+      project.link,
+      project.technologies,
+      project.description,
+    ].some((value) => value?.trim())
+  );
+
+  if (validProjects.length > 0) {
     resumeBlocks.push({
       id: "projects",
       node: (
         <div className="resume-block">
           <h2>Projects</h2>
 
-          {formData.projects.map((project, index) => (
-            <div className="preview-project" key={index}>
-              <div className="project-title">
-                <h3>{project.name || "Project Name"}</h3>
+          {validProjects.map((project, index) => {
+            const descriptionPoints = project.description
+              ?.split("\n")
+              .map((point) => point.trim())
+              .filter(Boolean) || [];
 
-                {project.link && (
-                  <a
-                    href={project.link}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    View Project
-                  </a>
+            return (
+              <div className="preview-project" key={index}>
+                {(project.name?.trim() || project.link?.trim()) && (
+                  <div className="project-title">
+                    {project.name?.trim() && (
+                      <h3>{project.name.trim()}</h3>
+                    )}
+
+                    {project.link?.trim() && (
+                      <a
+                        href={project.link.trim()}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        View Project
+                      </a>
+                    )}
+                  </div>
                 )}
-              </div>
 
-              <p className="project-tech">
-                {project.technologies || "Technologies used"}
-              </p>
+                {project.technologies?.trim() && (
+                  <p className="project-tech">
+                    {project.technologies.trim()}
+                  </p>
+                )}
 
-              {project.description ? (
-                <ul className="project-bullets">
-                  {project.description
-                    .split("\n")
-                    .filter((point) => point.trim() !== "")
-                    .map((point, i) => (
+                {descriptionPoints.length > 0 && (
+                  <ul className="project-bullets">
+                    {descriptionPoints.map((point, i) => (
                       <li key={i}>{point}</li>
                     ))}
-                </ul>
-              ) : (
-                <p>Your project description will appear here.</p>
-              )}
-            </div>
-          ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
         </div>
       ),
     });
   }
-
+}
   if (formData.skills?.length > 0) {
+  const validSkills = formData.skills.filter((skill) =>
+    [skill.heading, skill.description].some((value) => value?.trim())
+  );
+
+  if (validSkills.length > 0) {
     resumeBlocks.push({
       id: "skills",
       node: (
@@ -661,14 +735,21 @@ const Builder = () => {
           <h2>Technical Skills & Achievements</h2>
 
           <ul className="skills-preview">
-            {formData.skills.map((skill, index) => (
+            {validSkills.map((skill, index) => (
               <li key={index}>
-                <span className="skill-heading">
-                  {skill.heading || "Skill Heading"}:
-                </span>{" "}
-                <span className="skill-description">
-                  {skill.description || "Skill description"}
-                </span>
+                {skill.heading?.trim() && (
+                  <span className="skill-heading">
+                    {skill.heading.trim()}:
+                  </span>
+                )}
+
+                {skill.heading?.trim() && skill.description?.trim() && " "}
+
+                {skill.description?.trim() && (
+                  <span className="skill-description">
+                    {skill.description.trim()}
+                  </span>
+                )}
               </li>
             ))}
           </ul>
@@ -676,8 +757,19 @@ const Builder = () => {
       ),
     });
   }
-
+}
   if (formData.certifications?.length > 0) {
+  const validCertifications = formData.certifications.filter(
+    (certification) =>
+      [
+        certification.name,
+        certification.organization,
+        certification.date,
+        certification.link,
+      ].some((value) => value?.trim())
+  );
+
+  if (validCertifications.length > 0) {
     resumeBlocks.push({
       id: "certifications",
       node: (
@@ -685,48 +777,60 @@ const Builder = () => {
           <h2>Certifications</h2>
 
           <div className="certifications-preview">
-            {formData.certifications.map((certification, index) => (
-              <div
-                className="preview-certification"
-                key={index}
-              >
-                <div className="certification-row">
-                  <div className="certification-info">
-                    <span className="certification-name">
-                      {certification.name || "Certification Name"}
-                    </span>
+            {validCertifications.map((certification, index) => {
+              const details = [
+                certification.name?.trim(),
+                certification.organization?.trim(),
+              ].filter(Boolean);
 
-                    <span className="separator">{" | "}</span>
+              return (
+                <div className="preview-certification" key={index}>
+                  {(details.length > 0 ||
+                    certification.date?.trim() ||
+                    certification.link?.trim()) && (
+                    <div className="certification-row">
+                      <div className="certification-info">
+                        {details.map((detail, i) => (
+                          <span key={`${detail}-${i}`}>
+                            {i > 0 && (
+                              <span className="separator">{" | "}</span>
+                            )}
+                            {detail}
+                          </span>
+                        ))}
 
-                    <span className="certification-org">
-                      {certification.organization || "Organization"}
-                    </span>
+                        {certification.link?.trim() && (
+                          <>
+                            {details.length > 0 && (
+                              <span className="separator">{" | "}</span>
+                            )}
+                            <a
+                              href={certification.link.trim()}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              View Credential
+                            </a>
+                          </>
+                        )}
+                      </div>
 
-                    {certification.link && (
-                      <>
-                        <span className="separator">{" | "}</span>
-                        <a
-                          href={certification.link}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          View Credential
-                        </a>
-                      </>
-                    )}
-                  </div>
-
-                  <span className="certification-date">
-                    {certification.date || "Date"}
-                  </span>
+                      {certification.date?.trim() && (
+                        <span className="certification-date">
+                          {certification.date.trim()}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       ),
     });
   }
+}
 
   // --------------------------------------------------
   // AUTOMATIC A4 PAGINATION

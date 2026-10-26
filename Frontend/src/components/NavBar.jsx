@@ -14,15 +14,13 @@ const NavBar = () => {
  
 const fetchUser = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/logout`,
-      {
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+      credentials: "include",
+    });
 
     if (response.ok) {
       const data = await response.json();
-      setUser(data);
+      setUser(data.user || data);
     } else {
       setUser(null);
     }
@@ -30,7 +28,6 @@ const fetchUser = async () => {
     setUser(null);
   }
 };
-
 
   useEffect(() => {
     fetchUser();

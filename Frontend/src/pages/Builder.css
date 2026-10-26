@@ -1993,15 +1993,15 @@
   color: #ffffff;
 }
 
-/* Compact resume layout */
 /* =========================
    FIT TO ONE PAGE
 ========================= */
 
 .resume-preview.fit-one-page {
-  padding: 8mm !important;
+  box-sizing: border-box !important;
+  padding: 6mm !important;
   font-size: var(--resume-font-size, 11px) !important;
-  line-height: inherit !important;
+  line-height: var(--resume-line-spacing, 1.4) !important;
 }
 
 /* Body text */
@@ -2010,51 +2010,66 @@
 .resume-preview.fit-one-page a,
 .resume-preview.fit-one-page span {
   font-size: inherit !important;
-  line-height: inherit !important;
+  line-height: var(--resume-line-spacing, 1.4) !important;
 }
 
-/* Headings */
+/* Main heading */
 .resume-preview.fit-one-page h1 {
-  font-size: 1.8em !important;
+  font-size: 1.6em !important;
   line-height: 1.1 !important;
-  margin-bottom: 3px !important;
-}
-
-.resume-preview.fit-one-page h2 {
-  font-size: 1.2em !important;
-  line-height: 1.15 !important;
-  margin-top: 5px !important;
-  margin-bottom: 3px !important;
-}
-
-.resume-preview.fit-one-page h3 {
-  font-size: 1.05em !important;
-  line-height: 1.15 !important;
+  margin-top: 0 !important;
   margin-bottom: 2px !important;
 }
 
-.resume-preview.fit-one-page .resume-block-wrapper {
-  margin-bottom: 4px !important;
+/* Section headings */
+.resume-preview.fit-one-page h2 {
+  font-size: 1.15em !important;
+  line-height: 1.15 !important;
+  margin-top: 4px !important;
+  margin-bottom: 2px !important;
 }
 
-.resume-preview.fit-one-page ul {
-  margin-top: 2px !important;
-  margin-bottom: 3px !important;
+/* Subheadings */
+.resume-preview.fit-one-page h3 {
+  font-size: 1.02em !important;
+  line-height: 1.1 !important;
+  margin-top: 0 !important;
+  margin-bottom: 1px !important;
+}
+
+/* Section spacing — controlled by slider */
+.resume-preview.fit-one-page .resume-block-wrapper {
+  margin-bottom: var(--resume-section-spacing, 15px) !important;
+}
+
+/* Lists */
+.resume-preview.fit-one-page ul,
+.resume-preview.fit-one-page ol {
+  margin-top: 1px !important;
+  margin-bottom: 2px !important;
   padding-left: 14px !important;
 }
 
+/* Individual entries */
 .resume-preview.fit-one-page .preview-experience,
 .resume-preview.fit-one-page .preview-education,
 .resume-preview.fit-one-page .preview-project,
 .resume-preview.fit-one-page .preview-certification {
+  margin-top: 0 !important;
+  margin-bottom: 2px !important;
+}
+
+/* Contact information */
+.resume-preview.fit-one-page .resume-contact {
+  margin-top: 2px !important;
   margin-bottom: 3px !important;
 }
 
 /* =========================
-   RESUME SPACING CONTROLS
+   NORMAL RESUME MODE
 ========================= */
 
-/* Normal mode: font-size control */
+/* Font size */
 .resume-preview:not(.fit-one-page) {
   font-size: var(--resume-font-size, 11px) !important;
 }
@@ -2066,7 +2081,7 @@
   font-size: inherit !important;
 }
 
-/* Maintain heading hierarchy */
+/* Heading hierarchy */
 .resume-preview:not(.fit-one-page) h1 {
   font-size: 2.2em !important;
 }
@@ -2079,24 +2094,13 @@
   font-size: 1.1em !important;
 }
 
-/* Line spacing in both modes */
-.resume-preview p,
-.resume-preview li {
+/* Line spacing */
+.resume-preview:not(.fit-one-page) p,
+.resume-preview:not(.fit-one-page) li {
   line-height: var(--resume-line-spacing, 1.4) !important;
 }
 
-/* Section spacing in both modes */
-.resume-preview .resume-block-wrapper {
-  margin-bottom: var(--resume-section-spacing, 15px) !important;
-}
-
-/* Fit mode: respect the line-spacing slider */
-.resume-preview.fit-one-page p,
-.resume-preview.fit-one-page li {
-  line-height: var(--resume-line-spacing, 1.4) !important;
-}
-
-/* Fit mode: respect the section-spacing slider */
-.resume-preview.fit-one-page .resume-block-wrapper {
+/* Section spacing */
+.resume-preview:not(.fit-one-page) .resume-block-wrapper {
   margin-bottom: var(--resume-section-spacing, 15px) !important;
 }
