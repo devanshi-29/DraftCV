@@ -2104,3 +2104,81 @@
 .resume-preview:not(.fit-one-page) .resume-block-wrapper {
   margin-bottom: var(--resume-section-spacing, 15px) !important;
 }
+
+/* Signature on resume */
+/* Signature Upload Section */
+.signature-upload-section {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 20px 0 30px;
+}
+
+.signature-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 18px;
+  background: #d6dff1;
+  color: #060101;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.signature-upload-btn:hover {
+  background: #a5bdfa;
+}
+
+.signature-plus {
+  font-size: 21px;
+  line-height: 1;
+}
+
+.signature-upload-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.signature-upload-preview img {
+  width: 110px;
+  max-height: 55px;
+  object-fit: contain;
+}
+
+.signature-upload-preview button {
+  padding: 7px 12px;
+  border: 1px solid #dc2626;
+  border-radius: 6px;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+}
+
+/* Space between upload button and resume page */
+.signature-upload-section + .resume-pages {
+  margin-top: 20px;
+}
+
+/* Signature on actual resume */
+.resume-signature {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 20px;
+  padding-right: 10px;
+}
+
+.resume-signature img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  flex-shrink: 0;
+  object-fit: contain;
+}

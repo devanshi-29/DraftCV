@@ -72,6 +72,8 @@ const Builder = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
   const [saveError, setSaveError] = useState("");
+  const [signature, setSignature] = useState("");
+  const [signatureSize, setSignatureSize] = useState(180);
 
   const measureRef = useRef(null);
   const loadedResumeIdRef = useRef(null);
@@ -125,7 +127,7 @@ const Builder = () => {
         }
 
         const savedData = savedResume.resumeData || {};
-
+        
         // Support the structure used by this builder.
         const savedFormData =
           savedData.formData && typeof savedData.formData === "object"
@@ -146,6 +148,9 @@ const Builder = () => {
           ...DEFAULT_SPACING,
           ...(savedData.spacing || {}),
         });
+
+        setSignature(savedData.signature || "");
+        setSignatureSize(savedData.signatureSize || 180);
 
         if (
           savedResume.template &&
@@ -219,6 +224,38 @@ const Builder = () => {
     );
   }, [sections, isReady]);
 
+  const handleSignatureUpload = (event) => {
+  const file = event.target.files?.[0];
+
+  if (!file) return;
+
+  // Only image files are allowed
+  if (!file.type.startsWith("image/")) {
+    setSaveError("Please upload a valid image file.");
+    return;
+  }
+
+  // Maximum file size: 2 MB
+  if (file.size > 2 * 1024 * 1024) {
+    setSaveError("Signature image must be smaller than 2 MB.");
+    return;
+  }
+
+  const reader = new FileReader();
+
+  reader.onloadend = () => {
+    setSignature(reader.result);
+    setSaveError("");
+    setSaveMessage("Signature uploaded successfully.");
+  };
+
+  reader.onerror = () => {
+    setSaveError("Failed to read signature image.");
+  };
+
+  reader.readAsDataURL(file);
+};
+
   // --------------------------------------------------
   // SAVE NEW RESUME OR UPDATE EXISTING RESUME
   // --------------------------------------------------
@@ -246,6 +283,8 @@ const Builder = () => {
           formData,
           sections,
           spacing,
+          signature,
+          signatureSize,
         },
       };
 
@@ -1799,6 +1838,39 @@ const Builder = () => {
   </button>
 </div>
 
+{/* SIGNATURE UPLOAD */}
+
+{/* SIGNATURE UPLOAD */}
+<div className="signature-upload-section">
+  <label
+    htmlFor="signature-upload"
+    className="signature-upload-btn"
+  >
+    <span className="signature-plus"></span>
+    Upload Signature
+  </label>
+
+  <input
+    id="signature-upload"
+    type="file"
+    accept="image/png, image/jpeg"
+    onChange={handleSignatureUpload}
+    hidden
+  />
+
+  {signature && (
+    <div className="signature-upload-preview">
+      <img src={signature} alt="Uploaded signature" />
+
+      <button
+        type="button"
+        onClick={() => setSignature("")}
+      >
+        Remove
+      </button>
+    </div>
+  )}
+</div>
         {/* PAGINATED PREVIEW */}
         <div id="resume-preview-section" className="resume-pages">
           {pageGroups.map((group, pageIndex) => (
@@ -1838,10 +1910,47 @@ const Builder = () => {
                     </div>
                   );
                 })}
+
+                {pageIndex === pageGroups.length - 1 && signature && (
+  <div className="resume-signature">
+    <img
+      src={signature}
+      alt="Signature"
+      style={{
+      width: `${signatureSize}px`,
+      height: "auto",
+      objectFit: "contain",
+    }}
+    />
+  </div>
+)}
               </div>
             </div>
           ))}
+
         </div>
+
+        {/* SIGNATURE SIZE SLIDER */}
+{signature && (
+  <div className="signature-size-control">
+    <label htmlFor="signature-size">Adjust Signature Size</label>
+
+    <input
+      id="signature-size"
+      type="range"
+      min="30"
+      max="250"
+      step="5"
+      value={signatureSize}
+      onChange={(event) =>
+        setSignatureSize(Number(event.target.value))
+      }
+    />
+
+    <span>{signatureSize}px</span>
+  </div>
+)}
+
 
         {/* HIDDEN MEASUREMENT COPY FOR PAGINATION */}
         <div
