@@ -1,12 +1,12 @@
-
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
-const app = express();
-
 const authRoutes = require("./routes/auth.route");
 const resumeRoutes = require("./routes/resume.route");
+const draftRoutes = require("./routes/draft.route");
+
+const app = express();
 
 app.use(
   cors({
@@ -23,5 +23,6 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/resumes", resumeRoutes);
+app.use("/api/draft", draftRoutes);
 
 module.exports = app;

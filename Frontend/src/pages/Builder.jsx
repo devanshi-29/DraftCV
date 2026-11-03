@@ -7,6 +7,8 @@ import "./Builder.css";
 import API_BASE_URL from "../api";
 
 const API_URL = `${API_BASE_URL}/api/resumes`;
+const DRAFT_API_URL = `${API_BASE_URL}/api/draft`;
+
 
 const PAGE_HEIGHT_MM = 297;
 const PAGE_PADDING_MM = 12;
@@ -22,24 +24,6 @@ const DEFAULT_SPACING = {
 
 const DEFAULT_SECTIONS = ["summary"];
 
-const getLocalResume = () => {
-  try {
-    return JSON.parse(localStorage.getItem("draftcv-resume")) || {};
-  } catch {
-    return {};
-  }
-};
-
-const getLocalSections = () => {
-  try {
-    return (
-      JSON.parse(localStorage.getItem("draftcv-sections")) ||
-      DEFAULT_SECTIONS
-    );
-  } catch {
-    return DEFAULT_SECTIONS;
-  }
-};
 
 const Builder = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -55,11 +39,11 @@ const Builder = () => {
     formState: { errors },
   } = useForm({
     mode: "onBlur",
-    defaultValues: getLocalResume(),
+    defaultValues: {},
   });
 
   const [resumeTitle, setResumeTitle] = useState("Untitled Resume");
-  const [sections, setSections] = useState(getLocalSections);
+  const [sections, setSections] = useState(DEFAULT_SECTIONS);
   const [spacing, setSpacing] = useState(DEFAULT_SPACING);
   const [isFitToOnePage, setIsFitToOnePage] = useState(false);
 
@@ -68,6 +52,7 @@ const Builder = () => {
   const [pageGroups, setPageGroups] = useState([]);
 
   const [isReady, setIsReady] = useState(false);
+  const [isInitialDataLoaded, setIsInitialDataLoaded] = useState(false);
   const [isLoadingResume, setIsLoadingResume] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
@@ -84,71 +69,40 @@ const Builder = () => {
   // --------------------------------------------------
 
   useEffect(() => {
-    let cancelled = false;
+  let isCancelled = false;
 
-    const loadResume = async () => {
-      setSaveMessage("");
-      setSaveError("");
+  const loadInitialData = async () => {
+    let loadedSuccessfully = false;
+    setIsReady(false);
+    setIsLoadingResume(true);
+    setSaveError("");
+    setSaveMessage("");
 
-      if (!resumeId) {
-        setIsLoadingResume(false);
-        setIsReady(true);
-        loadedResumeIdRef.current = null;
-        return;
-      }
-
-      // Avoid reloading the same resume unnecessarily.
-      if (loadedResumeIdRef.current === resumeId) {
-        setIsReady(true);
-        return;
-      }
-
-      setIsLoadingResume(true);
-      setIsReady(false);
-
-      try {
+    try {
+      if (resumeId) {
         const response = await fetch(`${API_URL}/${resumeId}`, {
-          method: "GET",
           credentials: "include",
         });
 
         const result = await response.json();
 
         if (!response.ok) {
-          throw new Error(result.message || "Failed to load resume.");
+          throw new Error(result.message || "Failed to load resume");
         }
-
-        if (cancelled) return;
 
         const savedResume = result.resume;
-
-        if (!savedResume) {
-          throw new Error("Resume data was not found.");
-        }
-
         const savedData = savedResume.resumeData || {};
-        
-        // Support the structure used by this builder.
         const savedFormData =
           savedData.formData && typeof savedData.formData === "object"
             ? savedData.formData
             : savedData;
 
+        if (isCancelled) return;
+
         reset(savedFormData);
-
         setResumeTitle(savedResume.title || "Untitled Resume");
-
-        setSections(
-          Array.isArray(savedData.sections)
-            ? savedData.sections
-            : DEFAULT_SECTIONS
-        );
-
-        setSpacing({
-          ...DEFAULT_SPACING,
-          ...(savedData.spacing || {}),
-        });
-
+        setSections(savedData.sections || DEFAULT_SECTIONS);
+        setSpacing({ ...DEFAULT_SPACING, ...(savedData.spacing || {}) });
         setSignature(savedData.signature || "");
         setSignatureSize(savedData.signatureSize || 180);
 
@@ -156,73 +110,129 @@ const Builder = () => {
           savedResume.template &&
           savedResume.template !== selectedTemplate
         ) {
-          setSearchParams(
-            (previous) => {
-              const updated = new URLSearchParams(previous);
-              updated.set("template", savedResume.template);
-              return updated;
-            },
-            { replace: true }
-          );
+          setSearchParams({
+            resumeId,
+            template: savedResume.template,
+          });
         }
-
-        localStorage.setItem(
-          "draftcv-resume",
-          JSON.stringify(savedFormData)
-        );
-
-        localStorage.setItem(
-          "draftcv-sections",
-          JSON.stringify(
-            Array.isArray(savedData.sections)
-              ? savedData.sections
-              : DEFAULT_SECTIONS
-          )
-        );
 
         loadedResumeIdRef.current = resumeId;
-        setSaveMessage("Saved resume loaded successfully.");
-      } catch (error) {
-        if (!cancelled) {
-          console.error("LOAD RESUME ERROR:", error);
-          setSaveError(error.message || "Failed to load resume.");
+        setSaveMessage("Resume loaded successfully");
+      } else {
+        const response = await fetch(DRAFT_API_URL, {
+          credentials: "include",
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "Failed to load draft");
         }
-      } finally {
-        if (!cancelled) {
-          setIsLoadingResume(false);
-          setIsReady(true);
+
+        if (isCancelled) return;
+
+        const draft = result.draft;
+
+        if (draft) {
+          const draftData = draft.resumeData || {};
+
+          reset(draftData.formData || {});
+          setSections(draftData.sections || DEFAULT_SECTIONS);
+          setSpacing({ ...DEFAULT_SPACING, ...(draftData.spacing || {}) });
+          setSignature(draftData.signature || "");
+          setSignatureSize(draftData.signatureSize || 180);
+
+          if (draft.template && draft.template !== selectedTemplate) {
+            setSearchParams({ template: draft.template });
+          }
+
+          setSaveMessage("Draft restored successfully");
+        } else {
+          reset({});
+          setSections(DEFAULT_SECTIONS);
+          setSpacing(DEFAULT_SPACING);
+          setSignature("");
+          setSignatureSize(180);
         }
+
+        setResumeTitle("Untitled Resume");
+        loadedResumeIdRef.current = null;
       }
-    };
+      loadedSuccessfully = true;
+    } catch (error) {
+      if (!isCancelled) {
+        console.error("Load initial data error:", error);
+        setSaveError(error.message || "Failed to load resume data");
+      }
+    } finally {
+      if (!isCancelled) {
+        setIsLoadingResume(false);
+        setIsReady(true);
+        setIsInitialDataLoaded(loadedSuccessfully);
+      }
+    }
+  };
 
-    loadResume();
+  loadInitialData();
 
-    return () => {
-      cancelled = true;
-    };
-  }, [resumeId, reset, setSearchParams]);
+  return () => {
+    isCancelled = true;
+  };
+}, [resumeId, reset, setSearchParams]);
 
-  // --------------------------------------------------
-  // LOCAL STORAGE AUTOSAVE
-  // --------------------------------------------------
+  // MONGODB DRAFT AUTOSAVE
+useEffect(() => {
+  if (!isReady || !isInitialDataLoaded || isLoadingResume || resumeId) {
+    return;
+  }
 
-  useEffect(() => {
-    if (!isReady) return;
+  const saveDraft = async () => {
+    try {
+      const response = await fetch(DRAFT_API_URL, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          template: selectedTemplate,
+          resumeData: {
+            formData,
+            sections,
+            spacing,
+            signature,
+            signatureSize,
+          },
+        }),
+      });
 
-    localStorage.setItem(
-      "draftcv-resume",
-      JSON.stringify(formData)
-    );
-  }, [formData, isReady]);
+      if (!response.ok) {
+        throw new Error("Draft autosave failed");
+      }
 
-  useEffect(() => {
-    if (!isReady) return;
+      setSaveError("");
+      setSaveMessage("Draft autosaved");
+    } catch (error) {
+      console.error("Draft autosave error:", error);
+      setSaveError("Draft autosave failed");
+    }
+  };
 
-    localStorage.setItem(
-      "draftcv-sections",
-      JSON.stringify(sections)
-    );
-  }, [sections, isReady]);
+  const timer = setTimeout(saveDraft, 1000);
+
+  return () => clearTimeout(timer);
+}, [
+  formData,
+  sections,
+  spacing,
+  signature,
+  signatureSize,
+  selectedTemplate,
+  resumeId,
+  isReady,
+  isInitialDataLoaded,
+  isLoadingResume,
+]);
 
   const handleSignatureUpload = (event) => {
   const file = event.target.files?.[0];

@@ -2,6 +2,12 @@ const jwt = require("jsonwebtoken");
 
 function authMiddleware(req, res, next) {
     try {
+        console.log(
+        "AUTH CHECK:",
+          req.originalUrl,
+        "| Cookie present:",
+        Boolean(req.cookies?.token)
+        );
         const token = req.cookies.token;
 
         if (!token) {
@@ -13,7 +19,7 @@ function authMiddleware(req, res, next) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         req.user = decoded;
-
+        console.log("AUTH SUCCESS:", req.originalUrl);
         next();
     } catch (err) {
         return res.status(401).json({
